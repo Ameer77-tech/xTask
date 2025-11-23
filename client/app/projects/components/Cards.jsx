@@ -1,14 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProjectCard from "./Card";
 import useProjectStore from "@/app/Store/project.store";
 import ShowDialog from "@/components/Dialog";
 import { AnimatePresence } from "motion/react";
 import Toast from "@/components/Toast";
+import AddProjectForm from "./AddProjectForm";
 
 const Cards = () => {
   const projects = useProjectStore((state) => state.projects);
-  console.log(projects);
 
   const deleteProject = useProjectStore((state) => state.deleteProject);
   const updateProject = useProjectStore((state) => state.updateProject);
@@ -16,7 +16,10 @@ const Cards = () => {
 
   const [actionClicked, setActionClicked] = useState("");
   const [action, setaction] = useState("");
-  const [projectData, setprojectData] = useState("");
+  const [projectData, setprojectData] = useState({
+    text: "",
+    id: "",
+  });
   const [editingProject, seteditingProject] = useState("");
   const [editingForm, setEditingForm] = useState(false);
   const [isPending, setisPending] = useState(false);
@@ -26,7 +29,9 @@ const Cards = () => {
     type: "",
     isSuccess: false,
   });
+  const [initialDetails, setInitialDetails] = useState({});
   const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/projects`;
+
   const onDelete = async (id) => {
     setisPending(true);
     if (projectData.id === "" || projectData.id.length === 0) {
@@ -72,8 +77,6 @@ const Cards = () => {
       }, 2000);
     }
   };
-  const onEdit = (id) => {};
-
   const onMark = async (id) => {
     setisPending(true);
     if (projectData.id === "" || projectData.id.length === 0) {
@@ -98,7 +101,7 @@ const Cards = () => {
         setShowToast(true);
       } else {
         console.log(response.updated._id);
-        
+
         updateProject(response.updated._id, { completed: true });
         settoastData({
           message: response.reply,
@@ -122,8 +125,26 @@ const Cards = () => {
       }, 2000);
     }
   };
+  useEffect(() => {
+    projects.forEach((project, idx) => {
+      if (project._id === editingProject) {
+        setInitialDetails(project);
+      }
+    });
+  }, [editingProject]);
+
   return (
     <>
+      {editingForm && (
+        <AddProjectForm
+          isOpen={true}
+          setIsOpen={setEditingForm}
+          editingProject={editingProject}
+          projectDetails={initialDetails}
+          setActionClicked={setActionClicked}
+          seteditingProject={seteditingProject}
+        />
+      )}
       <AnimatePresence>
         {actionClicked && (
           <ShowDialog
@@ -152,7 +173,6 @@ const Cards = () => {
               hoveredProject={hoveredProject}
               setHoveredProject={setHoveredProject}
               onDelete={onDelete}
-              onEdit={onEdit}
               onMark={onMark}
               setData={setprojectData}
               setActionClicked={setActionClicked}

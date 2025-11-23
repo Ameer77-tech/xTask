@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import {
   CalendarDays,
+  CheckCheck,
   CheckCircle,
   ChevronRight,
   MoreVertical,
@@ -57,8 +58,9 @@ const ProjectCard = ({
       )}
     >
       {project.completed && (
-        <div className="font-mono w-full h-full shadow-inner bg-black/70 shadow-black absolute inset-0 z-20 flex justify-center items-center text-primary text-sm font-semibold">
-          COMPLETED
+        <div className="font-mono w-full h-full bg-black/70  absolute inset-0 z-20 flex justify-center items-center text-primary text-sm font-semibold">
+          <CheckCheck />{" "} 
+          Completed
         </div>
       )}
       {(isMobile || hoveredProject == project._id) && (
