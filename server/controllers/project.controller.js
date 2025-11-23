@@ -62,13 +62,23 @@ export const addProject = async (req, res) => {
 };
 export const getProjects = async (req, res) => {
   const userId = req.user.id;
+  const filter = req.params.filter;
   try {
     const allProjects = await projectsModel.find({ createdBy: userId }).lean();
+    const f = filter.toLowerCase();
 
-    const payload = allProjects.map((project) => ({
-      ...project,
-      totalTasks: project.tasks?.length,
-    }));
+    let payload;
+    
+    if (f === "in-progress") {
+      payload = allProjects.filter((p) => p.tasks?.length > 0 && !p.completed);
+    } else if (f === "completed") {
+      payload = allProjects.filter((p) => p.completed);
+    } else {
+      payload = allProjects.map((p) => ({
+        ...p,
+        totalTasks: p.tasks?.length ?? 0,
+      }));
+    }
 
     return res
       .status(200)

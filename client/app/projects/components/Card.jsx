@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "motion/react";
 
 const ProjectCard = ({
   project,
@@ -54,15 +55,31 @@ const ProjectCard = ({
     <Card
       onMouseEnter={() => setHoveredProject(project._id)}
       className={clsx(
-        "group relative border border-border/60 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out rounded-2xl hover:scale-[1.02] active:scale-[0.98]"
+        "group relative border border-border/60 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out rounded-2xl hover:scale-[1.02] active:scale-[0.98]",
+        project.completed && "pointer-events-none"
       )}
     >
       {project.completed && (
-        <div className="font-mono w-full h-full bg-black/70  absolute inset-0 z-20 flex justify-center items-center text-primary text-sm font-semibold">
-          <CheckCheck />{" "} 
-          Completed
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center
+               bg-black/50 backdrop-blur-[1px] text-primary"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-2xl 
+                 shadow-xl border border-white/20 font-semibold text-sm"
+          >
+            <CheckCheck className="w-4 h-4" />
+            Completed
+          </motion.div>
+        </motion.div>
       )}
+
       {(isMobile || hoveredProject == project._id) && (
         <div className="absolute top-3 right-3 w-5 h-5">
           <DropdownMenu>

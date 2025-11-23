@@ -24,7 +24,7 @@ export default function Filter({ filter }) {
               key={idx}
               className={clsx(
                 "select-none shadow-sm md:w-auto w-full shadow-muted-foreground/20 rounded-2xl px-3 py-2 cursor-pointer",
-                filter === name.toLowerCase() ? "bg-accent" : "bg-secondary"
+                filter === name.toLowerCase() ? "bg-accent text-black" : "bg-secondary"
               )}
             >
               {name}
