@@ -64,7 +64,6 @@ const AddTaskForm = ({
       initialTaskDetails === undefined ? defaultTaskState : initialTaskDetails
     )
   );
-  console.log(taskDetails, "here");
 
   useEffect(() => {
     setTaskDetails(buildFormState(initialTaskDetails));
