@@ -24,11 +24,34 @@ const defaultProjectState = {
   status: "not-started",
 };
 
-const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
+const AddProjectForm = ({
+  isOpen,
+  setIsOpen,
+  editingProject,
+  projectDetails,
+  setActionClicked,
+  seteditingProject,
+}) => {
   const [projectData, setProjectData] = useState(
-    projectDetails ? projectDetails : defaultProjectState
+    projectDetails === undefined ? defaultProjectState : projectDetails
   );
+
+  useEffect(() => {
+    if (projectDetails) {
+      setProjectData({
+        title: projectDetails.title ?? "",
+        description: projectDetails.description ?? "",
+        dueDate: projectDetails.dueDate ?? "",
+        priority: Number(projectDetails.priority) || 2,
+        status: projectDetails.status ?? "not-started",
+      });
+    } else {
+      setProjectData(defaultProjectState);
+    }
+  }, [projectDetails]);
+
   const createProject = useProjectStore((state) => state.createProject);
+  const updateProject = useProjectStore((state) => state.updateProject);
   const [showToast, setShowToast] = useState(false);
   const [toastData, setToastData] = useState({
     message: "",
@@ -36,6 +59,9 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
     isSuccess: false,
   });
   const [isPending, setIsPending] = useState(false);
+  const isPlanning = projectData.status === "planning";
+
+  const formatDate = (d) => (d ? new Date(d).toISOString().split("T")[0] : "");
 
   const showError = (msg) => {
     setToastData({ message: msg, type: "error", isSuccess: false });
@@ -47,7 +73,16 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
   };
 
   const handlePriorityChange = (value) => {
-    setProjectData((prev) => ({ ...prev, priority: Number(value) }));
+    if (value == "") {
+      setProjectData((prev) => ({
+        ...prev,
+        priority: Number(projectData.priority),
+      }));
+    }
+    setProjectData((prev) => ({
+      ...prev,
+      priority: Number(value),
+    }));
   };
 
   const validate = () => {
@@ -110,15 +145,52 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
     e.preventDefault();
     if (!validate()) return;
     setIsPending(true);
-
-    setToastData({
-      message: "Project updated successfully",
-      type: "success",
-      isSuccess: true,
-    });
-    setShowToast(true);
-    setIsPending(false);
-    setIsOpen(false);
+    if (editingProject.length === 0) {
+      return;
+    }
+    try {
+      const res = await fetch(`${apiUrl}/edit-project/${editingProject}`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(projectData),
+      });
+      const response = await res.json();
+      if (!response.success) {
+        setToastData({
+          message: response.reply,
+          type: "error",
+          isSuccess: false,
+        });
+        setShowToast(true);
+      } else {
+        console.log(response.updated._id);
+        updateProject(response.updated._id, response.updated);
+        setToastData({
+          message: response.reply,
+          type: "success",
+          isSuccess: false,
+        });
+        setShowToast(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsOpen(false);
+      setIsPending(false);
+      setActionClicked(false);
+      seteditingProject("");
+      setTimeout(() => {
+        setShowToast(false);
+        setToastData({
+          message: "",
+          type: "",
+          isSuccess: false,
+        });
+      }, 2000);
+    }
   };
 
   return (
@@ -162,17 +234,17 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
                 </button>
 
                 <h2 className="text-2xl font-bold mb-2 text-center">
-                  {editingTask ? "Edit Project" : "🚀 Create New Project"}
+                  {editingProject ? "Edit Project" : "🚀 Create New Project"}
                 </h2>
 
                 <p className="text-center text-gray-500 mb-6">
-                  {editingTask
+                  {editingProject
                     ? "Edit the Details of Your Project"
                     : "Enter the details for your new Project below."}
                 </p>
 
                 <form
-                  onSubmit={editingTask ? handleEdit : handleSubmit}
+                  onSubmit={editingProject ? handleEdit : handleSubmit}
                   className="space-y-4"
                 >
                   <div className="space-y-2">
@@ -181,7 +253,7 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
                       type="text"
                       id="title"
                       name="title"
-                      value={projectData.title}
+                      value={projectData.title || ""}
                       onChange={handleChange}
                       placeholder="e.g., Portfolio Website Redesign"
                       required
@@ -193,7 +265,7 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
                     <Textarea
                       id="description"
                       name="description"
-                      value={projectData.description}
+                      value={projectData.description || ""}
                       onChange={handleChange}
                       placeholder="Detailed notes or requirements..."
                       className="resize-none"
@@ -208,7 +280,7 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
                       type="date"
                       id="dueDate"
                       name="dueDate"
-                      value={projectData.dueDate}
+                      value={formatDate(projectData.dueDate || "")}
                       onChange={handleChange}
                     />
                   </div>
@@ -217,7 +289,11 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
                     <Label htmlFor="priority">Priority</Label>
                     <Select
                       value={String(projectData.priority)}
-                      onValueChange={handlePriorityChange}
+                      onValueChange={(value) =>
+                        handlePriorityChange(
+                          value === "" ? projectData.priority : value
+                        )
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select priority" />
@@ -232,13 +308,11 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
                   <div className="space-y-2 flex justify-between">
                     <Label htmlFor="planning">Still Planning?</Label>
                     <Switch
-                      onClick={() =>
+                      checked={isPlanning}
+                      onCheckedChange={(checked) =>
                         setProjectData((prev) => ({
                           ...prev,
-                          status:
-                            prev.status.toLowerCase() !== "planning"
-                              ? "planning"
-                              : "not-started",
+                          status: checked ? "planning" : "not-started",
                         }))
                       }
                     />
@@ -246,10 +320,10 @@ const AddProjectForm = ({ isOpen, setIsOpen, editingTask, projectDetails }) => {
 
                   <Button type="submit" className="w-full" disabled={isPending}>
                     {isPending
-                      ? editingTask
+                      ? editingProject
                         ? "Updating..."
                         : "Adding..."
-                      : editingTask
+                      : editingProject
                       ? "Edit Project"
                       : "Add Project"}
                   </Button>
