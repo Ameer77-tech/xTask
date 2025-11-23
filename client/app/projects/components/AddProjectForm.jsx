@@ -29,6 +29,8 @@ const AddProjectForm = ({
   setIsOpen,
   editingProject,
   projectDetails,
+  setActionClicked,
+  seteditingProject,
 }) => {
   const [projectData, setProjectData] = useState(
     projectDetails === undefined ? defaultProjectState : projectDetails
@@ -49,6 +51,7 @@ const AddProjectForm = ({
   }, [projectDetails]);
 
   const createProject = useProjectStore((state) => state.createProject);
+  const updateProject = useProjectStore((state) => state.updateProject);
   const [showToast, setShowToast] = useState(false);
   const [toastData, setToastData] = useState({
     message: "",
@@ -76,6 +79,10 @@ const AddProjectForm = ({
         priority: Number(projectData.priority),
       }));
     }
+    setProjectData((prev) => ({
+      ...prev,
+      priority: Number(value),
+    }));
   };
 
   const validate = () => {
@@ -138,15 +145,52 @@ const AddProjectForm = ({
     e.preventDefault();
     if (!validate()) return;
     setIsPending(true);
-
-    setToastData({
-      message: "Project updated successfully",
-      type: "success",
-      isSuccess: true,
-    });
-    setShowToast(true);
-    setIsPending(false);
-    setIsOpen(false);
+    if (editingProject.length === 0) {
+      return;
+    }
+    try {
+      const res = await fetch(`${apiUrl}/edit-project/${editingProject}`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(projectData),
+      });
+      const response = await res.json();
+      if (!response.success) {
+        setToastData({
+          message: response.reply,
+          type: "error",
+          isSuccess: false,
+        });
+        setShowToast(true);
+      } else {
+        console.log(response.updated._id);
+        updateProject(response.updated._id, response.updated);
+        setToastData({
+          message: response.reply,
+          type: "success",
+          isSuccess: false,
+        });
+        setShowToast(true);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsOpen(false);
+      setIsPending(false);
+      setActionClicked(false);
+      seteditingProject("");
+      setTimeout(() => {
+        setShowToast(false);
+        setToastData({
+          message: "",
+          type: "",
+          isSuccess: false,
+        });
+      }, 2000);
+    }
   };
 
   return (
@@ -245,7 +289,11 @@ const AddProjectForm = ({
                     <Label htmlFor="priority">Priority</Label>
                     <Select
                       value={String(projectData.priority)}
-                      onValueChange={(value) => handlePriorityChange(value)}
+                      onValueChange={(value) =>
+                        handlePriorityChange(
+                          value === "" ? projectData.priority : value
+                        )
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select priority" />
