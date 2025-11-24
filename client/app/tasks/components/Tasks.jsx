@@ -21,7 +21,7 @@ import { Spinner } from "@/components/ui/spinner";
 import AddTaskForm from "./AddTaskForm";
 
 const Tasks = ({ view, filter }) => {
-  const tasks = useTaskStore((state) => state.tasks);
+  const tasks = useTaskStore((state) => state.visibleTasks);
   const isLoading = useTaskStore((state) => state.isLoading);
   const allTasks = useMemo(() => {
     return [...(tasks || [])].sort((a, b) => {

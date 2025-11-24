@@ -137,11 +137,11 @@ const AppSideBar = () => {
           <SidebarUser user={userData} />
         </SidebarFooter>
       </Sidebar>
-      {path !== "/" && (
+      {/* {path !== "/" && ( */}
         <div className="lg:relative lg:-top-2 fixed top-0 left-0 z-50">
           <SidebarTrigger />
         </div>
-      )}
+      {/* )} */}
     </SidebarProvider>
   );
   
