@@ -44,7 +44,10 @@ const SidebarLogo = () => {
           width={40}
           height={40}
           alt="logo"
-          className={clsx("rounded-md size-9")}
+          className={clsx(
+            "rounded-md transition-all ease",
+            state === "collapsed" ? "size-9" : "size-15"
+          )}
         />
       </div>
       {state !== "collapsed" && (
@@ -78,8 +81,9 @@ const SidebarUser = ({ user }) => {
   );
 };
 
-const AppSideBar = () => {
+const SideBarChild = () => {
   const userData = useUserStore((state) => state);
+  const { state } = useSidebar();
   const path = usePathname();
   const tabs = [
     { name: "Dashboard", icon: Home, link: "/" },
@@ -91,7 +95,7 @@ const AppSideBar = () => {
   ];
 
   return (
-    <SidebarProvider>
+    <>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <SidebarLogo />
@@ -132,19 +136,26 @@ const AppSideBar = () => {
         </SidebarContent>
 
         <SidebarFooter
-          className={clsx("py-5", "collapsed" === "collapsed" ? "px-0" : "px-5")}
+          className={clsx("py-5 transition-all ease", state === "collapsed" ? "px-0" : "px-5")}
         >
           <SidebarUser user={userData} />
         </SidebarFooter>
       </Sidebar>
       {/* {path !== "/" && ( */}
-        <div className="lg:relative lg:-top-2 fixed top-0 left-0 z-50">
-          <SidebarTrigger />
-        </div>
+      <div className="lg:relative lg:-top-2 fixed top-0 left-0 z-50">
+        <SidebarTrigger />
+      </div>
       {/* )} */}
+    </>
+  );
+};
+
+const AppSideBar = () => {
+  return (
+    <SidebarProvider>
+      <SideBarChild />
     </SidebarProvider>
   );
-  
 };
 
 export default AppSideBar;
