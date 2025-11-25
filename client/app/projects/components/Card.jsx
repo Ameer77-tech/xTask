@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "motion/react";
-
+const MotionCard = motion.create(Card);
 const ProjectCard = ({
   project,
   hoveredProject,
@@ -34,6 +34,7 @@ const ProjectCard = ({
   setData,
   setActionClicked,
   setaction,
+  index
 }) => {
   const isMobile = useIsMobile();
   const progress =
@@ -51,8 +52,12 @@ const ProjectCard = ({
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
   };
+
   return (
-    <Card
+    <MotionCard
+      initial={{ opacity: 0}}
+      animate={{ opacity: 1}}
+      transition={{ duration: index * 0.3 }}
       onMouseEnter={() => setHoveredProject(project._id)}
       className={clsx(
         "group relative border border-border/60 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out rounded-2xl hover:scale-[1.02] active:scale-[0.98]",
@@ -60,24 +65,18 @@ const ProjectCard = ({
       )}
     >
       {project.completed && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="absolute inset-0 z-20 flex flex-col items-center justify-center
                bg-black/50 backdrop-blur-[1px] text-primary"
         >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
+          <div
             className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-2xl 
                  shadow-xl border border-white/20 font-semibold text-sm"
           >
             <CheckCheck className="w-4 h-4" />
             Completed
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {(isMobile || hoveredProject == project._id) && (
@@ -176,7 +175,7 @@ const ProjectCard = ({
           </div>
         </CardFooter>
       </Link>
-    </Card>
+    </MotionCard>
   );
 };
 

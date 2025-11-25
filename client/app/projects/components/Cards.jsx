@@ -9,6 +9,7 @@ import AddProjectForm from "./AddProjectForm";
 
 const Cards = () => {
   const projects = useProjectStore((state) => state.visibleProjects);
+
   const deleteProject = useProjectStore((state) => state.deleteProject);
   const updateProject = useProjectStore((state) => state.updateProject);
   const [hoveredProject, setHoveredProject] = useState("");
@@ -168,6 +169,7 @@ const Cards = () => {
           projects?.map((project, idx) => (
             <ProjectCard
               key={project._id}
+              index={idx}
               project={project}
               hoveredProject={hoveredProject}
               setHoveredProject={setHoveredProject}
