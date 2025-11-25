@@ -19,10 +19,13 @@ import Toast from "@/components/Toast";
 import Loading from "@/components/Loading";
 import { Spinner } from "@/components/ui/spinner";
 import AddTaskForm from "./AddTaskForm";
+import { usePathname } from "next/navigation";
 
 const Tasks = ({ view, filter }) => {
   const tasks = useTaskStore((state) => state.visibleTasks);
   const isLoading = useTaskStore((state) => state.isLoading);
+  const pathName = usePathname();
+
   const allTasks = useMemo(() => {
     return [...(tasks || [])].sort((a, b) => {
       if (a.status === "completed" && b.status !== "completed") return 1;
@@ -176,20 +179,15 @@ const Tasks = ({ view, filter }) => {
   const updateTimer = useTaskStore((state) => state.updateTimer);
 
   const onPlay = (id) => {
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     setrunningTask(id);
-    timerIntervalRef.current = setInterval(() => {
-      updateTimer(id);
-    }, 1000);
   };
 
   const onPause = async (id) => {
     await saveTimerToDB(id);
-    clearInterval(timerIntervalRef.current);
+
     setrunningTask("");
   };
   const onReset = async (id) => {
-    clearInterval(timerIntervalRef.current);
     editTask(id, { timer: 0 });
     await updateTimerInDb(id, { timer: 0 });
     setrunningTask("");
@@ -200,18 +198,42 @@ const Tasks = ({ view, filter }) => {
     const s = String(seconds % 60).padStart(2, "0");
     return `${h}:${m}:${s}`;
   };
+  useEffect(() => {
+    if (!runningTask) {
+      clearInterval(timerIntervalRef.current);
+      return;
+    }
+
+    // start interval
+    timerIntervalRef.current = setInterval(() => {
+      updateTimer(runningTask);
+    }, 1000);
+
+    // cleanup
+    return () => clearInterval(timerIntervalRef.current);
+  }, [runningTask]);
+  useEffect(() => {
+    if (pathName !== "/tasks") {
+      if (runningTask) {
+        saveTimerToDB(runningTask);
+        setrunningTask("");
+      }
+    }
+  }, [pathName]);
 
   useEffect(() => {
     const handleUnload = () => {
       if (!runningTask) return;
-
       const task = tasks.find((t) => t._id === runningTask);
       if (!task) return;
+      clearInterval(timerIntervalRef.current);
+      setrunningTask("");
       saveTimerToDB(runningTask);
     };
     window.addEventListener("beforeunload", handleUnload);
     return () => window.removeEventListener("beforeunload", handleUnload);
   }, [runningTask, tasks]);
+
   const saveTimerToDB = async (id) => {
     const task = tasks.find((t) => t._id === id);
     if (!task) return;

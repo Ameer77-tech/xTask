@@ -36,7 +36,7 @@ const Task = ({
   index,
 }) => {
   const MotionTableRow = motion(TableRow);
-
+  
   return (
     <MotionTableRow
       layout

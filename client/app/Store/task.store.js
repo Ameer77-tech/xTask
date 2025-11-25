@@ -13,11 +13,15 @@ const useTaskStore = create((set) => ({
   removeTask: (taskId) => {
     set((state) => ({
       tasks: state.tasks.filter((task) => task._id !== taskId),
+      visibleTasks: state.tasks.filter((task) => task._id !== taskId),
     }));
   },
   updateTask: (taskId, updatedTask) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
+        task._id === taskId ? { ...task, ...updatedTask } : task
+      ),
+      visibleTasks: state.tasks.map((task) =>
         task._id === taskId ? { ...task, ...updatedTask } : task
       ),
     })),
