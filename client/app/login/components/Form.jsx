@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
 import Toast from "@/components/Toast";
 import { useRouter } from "next/navigation";
+import { EyeClosed, Eye } from "lucide-react";
 
 const Form = () => {
   const router = useRouter();
@@ -30,7 +31,7 @@ const Form = () => {
     type: "",
   });
   const [showToast, setshowToast] = useState(false);
-
+  const [showPassword, setshowPassword] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -131,10 +132,10 @@ const Form = () => {
               )}
             </div>
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 relative">
               <Input
                 placeholder="Password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -146,9 +147,23 @@ const Form = () => {
               {errors.password && (
                 <p className="text-destructive text-sm">{errors.password}</p>
               )}
+              <div
+                onClick={() => setshowPassword((prev) => !prev)}
+                className="absolute right-5 top-1/2 -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <Eye size={"17"} className="text-primary" />
+                ) : (
+                  <EyeClosed size={"17"} />
+                )}
+              </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={pending}>
+            <Button
+              type="submit"
+              className="w-full select-none"
+              disabled={pending}
+            >
               {pending ? (
                 <>
                   <Spinner className="size-5 mr-2" />
@@ -160,7 +175,7 @@ const Form = () => {
             </Button>
           </form>
 
-          <div className="border-accent w-full h-px border relative my-10">
+          <div className="border-accent w-full h-px border relative my-10  select-none">
             <span className="text-muted-foreground bg-card absolute left-1/2 -translate-x-1/2 -top-3 w-40 lg:w-50 text-center">
               Or Continue With
             </span>

@@ -8,8 +8,7 @@ import Toast from "@/components/Toast";
 import AddProjectForm from "./AddProjectForm";
 
 const Cards = () => {
-  const projects = useProjectStore((state) => state.projects);
-
+  const projects = useProjectStore((state) => state.visibleProjects);
   const deleteProject = useProjectStore((state) => state.deleteProject);
   const updateProject = useProjectStore((state) => state.updateProject);
   const [hoveredProject, setHoveredProject] = useState("");

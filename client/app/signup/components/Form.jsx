@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Form = () => {
   const router = useRouter();
+  const [showPassword, setshowPassword] = useState(false);
   const [formData, setFormData] = useState({
     userName: "",
     displayName: "",
@@ -165,7 +167,7 @@ const Form = () => {
               <Input
                 onChange={handleChange}
                 placeholder="Password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 className={"lg:text-lg lg:py-2"}
@@ -174,11 +176,11 @@ const Form = () => {
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
               )}
             </div>
-            <div>
+            <div className="relative">
               <Input
                 onChange={handleChange}
                 placeholder="Confirm Password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 className={"lg:text-lg lg:py-2"}
@@ -188,6 +190,16 @@ const Form = () => {
                   {errors.confirmPassword}
                 </p>
               )}
+              <div
+                onClick={() => setshowPassword((prev) => !prev)}
+                className="absolute right-5 top-1/2 -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <Eye size={"17"} className="text-primary" />
+                ) : (
+                  <EyeClosed size={"17"} />
+                )}
+              </div>
             </div>
             {pending ? (
               <Button type="submit" className="w-full" disabled>
@@ -201,7 +213,7 @@ const Form = () => {
             )}
           </form>
 
-          <div className="border-accent w-full h-[1px] border relative my-10">
+          <div className="border-accent w-full h-px border relative my-10">
             <span className="text-muted-foreground bg-card absolute left-1/2 -translate-x-1/2 -top-3 w-40 lg:w-50 text-center">
               Or Continue With
             </span>
