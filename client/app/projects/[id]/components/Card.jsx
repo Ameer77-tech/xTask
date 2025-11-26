@@ -21,7 +21,11 @@ const TaskCard = ({ task }) => {
           <Button size="icon" variant={"default"}>
             <Edit className="w-4 h-4 hover:text-blue-600" />
           </Button>
-          <Button size="icon" variant={"ghost"} className={"hover:bg-destructive/30 group"}>
+          <Button
+            size="icon"
+            variant={"ghost"}
+            className={"hover:bg-destructive/30 group"}
+          >
             <Trash2 className="w-4 h-4 text-red-500" />
           </Button>
         </div>
@@ -30,19 +34,24 @@ const TaskCard = ({ task }) => {
       <CardContent className="space-y-3">
         <div className="flex items-center gap-2 text-gray-400 text-sm">
           <Calendar className="w-4 h-4" />
-          <span>{task.dueDate}</span>
+          <span>{new Date(task.dueDate).toLocaleDateString("en-GB")}</span>
         </div>
 
         <Badge
           className={
-            task.priority === "High"
+            task.priority === 1
               ? "bg-red-600"
-              : task.priority === "Medium"
+              : task.priority === 2
               ? "bg-yellow-600"
               : "bg-green-600"
           }
         >
-          {task.priority} Priority
+          {task.priority === 1
+            ? "High"
+            : task.priority === 2
+            ? "Medium"
+            : "Low"}{" "}
+          Priority
         </Badge>
 
         <div className="flex justify-between items-center pt-3 border-t border-gray-800">

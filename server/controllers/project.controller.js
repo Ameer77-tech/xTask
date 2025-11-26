@@ -68,7 +68,7 @@ export const getProjects = async (req, res) => {
     const f = filter.toLowerCase();
 
     let payload;
-    
+
     if (f === "in-progress") {
       payload = allProjects.filter((p) => p.tasks?.length > 0 && !p.completed);
     } else if (f === "completed") {
@@ -94,11 +94,20 @@ export const getProject = async (req, res) => {
   const userId = req.user.id;
   const id = req.params.projectId;
   try {
-    const project = await projectsModel.findOne({ createdBy: userId, _id: id });
+    const project = await projectsModel
+      .findOne({ createdBy: userId, _id: id })
+      .populate("tasks");
+    const payload = {
+      projectId: project._id,
+      projectTitle: project.title,
+      projectDescription: project.description,
+      projectPriority: project.priority,
+      tasks: project.tasks,
+    };
     return res.status(200).json({
       reply: "Project Fetched",
       success: true,
-      project,
+      payload,
     });
   } catch (err) {
     res
