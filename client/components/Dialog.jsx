@@ -101,7 +101,8 @@ const ShowDialog = ({
                     ? onDelete(Data.id)
                     : action === "edit"
                     ? (seteditingTask(Data.id), setEditingForm(true))
-                    : onMark(Data.id);
+                    : seteditingTask(Data.id),
+                    setEditingForm(true);
                 }}
                 className="w-1/2 rounded-lg"
               >

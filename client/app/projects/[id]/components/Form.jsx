@@ -27,13 +27,20 @@ const formatDateForInput = (dateString) => {
   }
 };
 
-const Form = ({ editingTask, initialTaskDetails, setIsOpen, id }) => {
+const Form = ({
+  editingTask,
+  initialTaskDetails,
+  setIsOpen,
+  id,
+  setActionClicked,
+  seteditingTask,
+}) => {
   const defaultTaskState = {
     title: "",
     description: "",
     dueDate: "",
     priority: 2,
-    type: "personal",
+    type: "project",
     linkedProject: null,
   };
   const addTask = useTaskStore((state) => state.addTask);
@@ -58,6 +65,8 @@ const Form = ({ editingTask, initialTaskDetails, setIsOpen, id }) => {
     )
   );
 
+  console.log(taskDetails);
+
   useEffect(() => {
     setTaskDetails(buildFormState(initialTaskDetails));
   }, [initialTaskDetails, editingTask]);
@@ -78,7 +87,6 @@ const Form = ({ editingTask, initialTaskDetails, setIsOpen, id }) => {
       return () => window.removeEventListener("keydown", handleKeyDown);
     }
   }, [setIsOpen]);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -155,9 +163,6 @@ const Form = ({ editingTask, initialTaskDetails, setIsOpen, id }) => {
           isSuccess: false,
         });
         setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 2000);
       } else {
         updateTask(data.updatedTask._id, data.updatedTask);
         setToastData({
@@ -166,24 +171,29 @@ const Form = ({ editingTask, initialTaskDetails, setIsOpen, id }) => {
           isSuccess: true,
         });
         setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 2000);
       }
     } catch (err) {
       console.log(err);
       setShowToast(true);
       setToastData({
-        message: err,
+        message: "Server Error",
         type: "error",
         isSuccess: false,
       });
     } finally {
-      setIsOpen(false);
       setTaskDetails(buildFormState(initialTaskDetails));
       setisPending(false);
       setActionClicked(false);
       seteditingTask("");
+      setTimeout(() => {
+        setShowToast(false);
+        setToastData({
+          message: "",
+          type: "",
+          isSuccess: false,
+        });
+        setIsOpen(false);
+      }, 2000);
     }
   };
 
@@ -203,7 +213,7 @@ const Form = ({ editingTask, initialTaskDetails, setIsOpen, id }) => {
 
   return (
     <>
-      {/* <Toast key="toast" show={showToast} toastData={toastData} /> */}
+      <Toast show={showToast} toastData={toastData} />
       <>
         <motion.div
           key="overlay"

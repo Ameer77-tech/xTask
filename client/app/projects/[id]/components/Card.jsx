@@ -9,15 +9,36 @@ import {
   Calendar,
   RotateCcw,
   Check,
+  CheckCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+const formatTime = (seconds) => {
+  const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+  const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+};
 const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <Card className="bg-[#111] border border-gray-800 rounded-2xl shadow-md">
+    <Card className="bg-[#111]  border-gray-800 rounded-2xl shadow-md relative">
+      {task.completed && (
+        <div
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center
+               bg-black/50 backdrop-blur-[1px] text-primary"
+        >
+          <div
+            className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-2xl 
+                 shadow-xl border border-white/20 font-semibold text-sm"
+          >
+            <CheckCheck className="w-4 h-4" />
+            Completed
+          </div>
+        </div>
+      )}
       <CardHeader className="flex justify-between items-start">
         <div>
           <CardTitle className="text-lg font-semibold text-white">
@@ -28,6 +49,9 @@ const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
         <div className="flex gap-2">
           <Button
             onClick={() => {
+              if (task.completed) {
+                return;
+              }
               setAction("edit");
               setTaskDetails({ title: task.title, id: task._id });
               setActionClicked(true);
@@ -40,6 +64,9 @@ const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
           </Button>
           <Button
             onClick={() => {
+              if (task.completed) {
+                return;
+              }
               setAction("delete");
               setTaskDetails({ title: task.title, id: task._id });
               setActionClicked(true);
@@ -77,7 +104,9 @@ const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
         </Badge>
 
         <div className="flex justify-between items-center pt-3 border-t border-gray-800">
-          <div className="text-gray-300 font-mono">{task.timeSpent}</div>
+          <div className="text-gray-300 font-mono">
+            {formatTime(task.timer)}
+          </div>
           <div className="flex gap-5">
             <Button
               size="icon"
@@ -100,6 +129,9 @@ const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
             </Button>
             <Button
               onClick={() => {
+                if (task.completed) {
+                  return;
+                }
                 setAction("mark");
                 setTaskDetails({ title: task.title, id: task._id });
                 setActionClicked(true);
