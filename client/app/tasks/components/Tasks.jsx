@@ -357,7 +357,11 @@ const Tasks = ({ view, filter }) => {
             view == "grid" ? "md:grid md:grid-cols-3" : "md:hidden"
           )}
         >
-          {allTasks.length < 1 ? (
+          {isLoading ? (
+            <div className="flex w-full mt-20 justify-center">
+              <Spinner className={"text-primary size-5"} />
+            </div>
+          ) : allTasks.length < 1 ? (
             <p className="text-center text-muted-foreground">NO TASKS</p>
           ) : (
             allTasks.map((task, idx) => (

@@ -37,9 +37,11 @@ const ProjectCard = ({
   index
 }) => {
   const isMobile = useIsMobile();
+  console.log(project);
+  
   const progress =
     project.totalTasks > 0
-      ? Math.round((project.totalDone / project.totalTasks) * 100)
+      ? Math.round((project.totaltasksCompleted / project.totalTasks) * 100)
       : 0;
 
   const statusColor = clsx(

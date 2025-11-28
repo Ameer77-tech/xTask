@@ -74,10 +74,13 @@ export const getProjects = async (req, res) => {
     } else if (f === "completed") {
       payload = allProjects.filter((p) => p.completed);
     } else {
-      payload = allProjects.map((p) => ({
-        ...p,
-        totalTasks: p.tasks?.length ?? 0,
-      }));
+      payload = allProjects.map((p) => {
+        const { tasks, ...rest } = p;
+        return {
+          ...rest,
+          totalTasks: tasks?.length ?? 0,
+        };
+      });
     }
 
     return res

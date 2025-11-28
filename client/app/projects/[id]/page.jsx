@@ -8,7 +8,8 @@ import TasksInitializer from "@/app/initializers/tasks.initializer";
 const page = async ({ params }) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  const project = await params.id;
+  const param = await params;
+  const project = await param.id;
   if (!token) {
     redirect("/login");
   }
@@ -33,7 +34,6 @@ const page = async ({ params }) => {
   } catch (err) {
     console.log(err);
   }
-  console.log(data);
 
   return (
     <>
