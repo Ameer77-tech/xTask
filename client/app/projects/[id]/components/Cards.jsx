@@ -129,7 +129,6 @@ const AllTasks = () => {
     }
   }, [editingTask]);
 
-  console.log(initialDetails);
 
   return (
     <>

@@ -113,9 +113,6 @@ const Form = ({
           isSuccess: false,
         });
         setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 2000);
       } else {
         addTask(data.created);
         setToastData({
@@ -124,9 +121,6 @@ const Form = ({
           isSuccess: true,
         });
         setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 2000);
       }
     } catch (err) {
       console.log(err);
@@ -137,9 +131,17 @@ const Form = ({
         isSuccess: false,
       });
     } finally {
-      setIsOpen(false);
       setTaskDetails(buildFormState(initialTaskDetails ?? defaultTaskState));
       setisPending(false);
+      setTimeout(() => {
+        setShowToast(false);
+        setToastData({
+          message: "",
+          type: "",
+          isSuccess: false,
+        });
+        setIsOpen(false);
+      }, 2000);
     }
   };
 
