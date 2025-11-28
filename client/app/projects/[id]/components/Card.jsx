@@ -1,11 +1,19 @@
 "use client";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Pause, Edit, Trash2, Calendar, RotateCcw } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Edit,
+  Trash2,
+  Calendar,
+  RotateCcw,
+  Check,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const TaskCard = ({ task }) => {
+const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
@@ -18,10 +26,24 @@ const TaskCard = ({ task }) => {
           <p className="text-sm text-gray-400">{task.description}</p>
         </div>
         <div className="flex gap-2">
-          <Button size="icon" variant={"default"}>
+          <Button
+            onClick={() => {
+              setAction("edit");
+              setTaskDetails({ title: task.title, id: task._id });
+              setActionClicked(true);
+            }}
+            size="icon"
+            variant={"default"}
+            className={"bg-accent hover:bg-accent/80"}
+          >
             <Edit className="w-4 h-4 hover:text-blue-600" />
           </Button>
           <Button
+            onClick={() => {
+              setAction("delete");
+              setTaskDetails({ title: task.title, id: task._id });
+              setActionClicked(true);
+            }}
             size="icon"
             variant={"ghost"}
             className={"hover:bg-destructive/30 group"}
@@ -75,6 +97,16 @@ const TaskCard = ({ task }) => {
               className="text-white bg-indigo-600 hover:bg-indigo-700 rounded-full"
             >
               <RotateCcw />
+            </Button>
+            <Button
+              onClick={() => {
+                setAction("mark");
+                setTaskDetails({ title: task.title, id: task._id });
+                setActionClicked(true);
+              }}
+              className="bg-primary rounded-full"
+            >
+              <Check />
             </Button>
           </div>
         </div>

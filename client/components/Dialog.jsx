@@ -13,7 +13,7 @@ const ShowDialog = ({
   seteditingTask,
   onMark,
   isPending,
-  setEditingForm
+  setEditingForm,
 }) => {
   useEffect(() => {
     const handler = (e) => e.key === "Escape" && setActionClicked(false);
@@ -59,19 +59,18 @@ const ShowDialog = ({
               {action === "delete" ? (
                 <>
                   {" "}
-                  <span className="text-destructive">Delete</span> task{" "}
-                  "{Data.text}"{" "}
+                  <span className="text-destructive">Delete</span> task "
+                  {Data.title}"{" "}
                 </>
               ) : action === "edit" ? (
                 <>
                   {" "}
-                  <span className="text-primary">Edit</span> task{" "}
-                  "{Data.text}"{" "}
+                  <span className="text-primary">Edit</span> task "{Data.title}"{" "}
                 </>
               ) : (
                 <>
                   {" "}
-                  <span className="text-cyan-600">Mark</span> "{Data.text}" as
+                  <span className="text-cyan-600">Mark</span> "{Data.title}" as
                   completed ?{" "}
                 </>
               )}
@@ -99,10 +98,10 @@ const ShowDialog = ({
                 size="lg"
                 onClick={() => {
                   action === "delete"
-                    ? onDelete()
+                    ? onDelete(Data.id)
                     : action === "edit"
                     ? (seteditingTask(Data.id), setEditingForm(true))
-                    : onMark();
+                    : onMark(Data.id);
                 }}
                 className="w-1/2 rounded-lg"
               >
