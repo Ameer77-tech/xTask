@@ -90,7 +90,7 @@ const Cards = () => {
           "content-type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ completed: true }),
+        body: JSON.stringify({ completed: true, status: "completed" }),
       });
       const response = await res.json();
       if (!response.success) {

@@ -86,11 +86,10 @@ const AllTasks = () => {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ completed: true }),
+        body: JSON.stringify({ completed: true, status: "completed" }),
         credentials: "include",
       });
       const res = await response.json();
-      console.log(res);
 
       if (!res.success) {
         setShowToast(true);
