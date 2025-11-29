@@ -1,16 +1,18 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TaskCard from "./Card";
 import useTaskStore from "@/app/Store/task.store";
 import ShowDialog from "@/components/Dialog";
 import { AnimatePresence } from "motion/react";
 import Toast from "@/components/Toast";
 import Form from "./Form";
+import { usePathname } from "next/navigation";
 
 const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
 
 const AllTasks = () => {
-  const allTasks = useTaskStore((state) => state.tasks);
+  const pathName = usePathname();
+  const allTasks = useTaskStore((state) => state.visibleTasks);
   const removeTask = useTaskStore((state) => state.removeTask);
   const updateTask = useTaskStore((state) => state.updateTask);
   const [editingTask, setEditingTask] = useState("");
@@ -129,6 +131,87 @@ const AllTasks = () => {
     }
   }, [editingTask]);
 
+  /* TIMERRRRR LOGIC */
+  const timerIntervalRef = useRef(null);
+  const [runningTask, setrunningTask] = useState("");
+  const updateTimer = useTaskStore((state) => state.updateTimer);
+
+  const onPlay = (id) => {
+    setrunningTask(id);
+  };
+
+  const onPause = async (id) => {
+    await saveTimerToDB(id);
+    setrunningTask("");
+  };
+  const onReset = async (id) => {
+    updateTask(id, { timer: 0 });
+    await updateTimerInDb(id, { timer: 0 });
+    setrunningTask("");
+  };
+  const formatTime = (seconds) => {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  };
+  useEffect(() => {
+    if (!runningTask) {
+      clearInterval(timerIntervalRef.current);
+      return;
+    }
+    // start interval
+    timerIntervalRef.current = setInterval(() => {
+      updateTimer(runningTask);
+    }, 1000);
+    // cleanup
+    return () => clearInterval(timerIntervalRef.current);
+  }, [runningTask]);
+
+  useEffect(() => {
+    if (pathName !== "/tasks") {
+      if (runningTask) {
+        saveTimerToDB(runningTask);
+        setrunningTask("");
+      }
+    }
+  }, [pathName]);
+
+  useEffect(() => {
+    const handleUnload = () => {
+      if (!runningTask) return;
+      const task = allTasks.find((t) => t._id === runningTask);
+      if (!task) return;
+      clearInterval(timerIntervalRef.current);
+      setrunningTask("");
+      saveTimerToDB(runningTask);
+    };
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, [runningTask, allTasks]);
+
+  const saveTimerToDB = async (id) => {
+    const task = allTasks.find((t) => t._id === id);
+    if (!task) return;
+    await updateTimerInDb(id, { timer: task.timer });
+  };
+
+  const updateTimerInDb = async (id, data) => {
+    try {
+      const response = await fetch(`${apiUrl}/edit-task/${id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      const res = await response.json();
+      if (!res.success) console.log("Save failed:", res);
+    } catch (err) {
+      console.log("DB Save error:", err);
+    }
+  };
+
+  /* TIMERRRRR LOGIC */
 
   return (
     <>
@@ -168,6 +251,9 @@ const AllTasks = () => {
         ) : (
           allTasks.map((task) => (
             <TaskCard
+              onPlay={onPlay}
+              onPause={onPause}
+              onReset={onReset}
               setActionClicked={setActionClicked}
               setAction={setAction}
               setTaskDetails={setTaskDetails}

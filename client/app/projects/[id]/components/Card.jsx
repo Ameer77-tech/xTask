@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Play,
@@ -20,8 +20,24 @@ const formatTime = (seconds) => {
   const s = String(seconds % 60).padStart(2, "0");
   return `${h}:${m}:${s}`;
 };
-const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
+const TaskCard = ({
+  task,
+  setActionClicked,
+  setAction,
+  setTaskDetails,
+  onPlay,
+  onPause,
+  onReset,
+}) => {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    if (isPlaying) {
+      onPlay(task._id);
+    } else {
+      onPause(task._id);
+    }
+  }, [isPlaying]);
 
   return (
     <Card className="bg-[#111]  border-gray-800 rounded-2xl shadow-md relative">
@@ -112,7 +128,9 @@ const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
               size="icon"
               variant="ghost"
               className="text-white bg-indigo-600 hover:bg-indigo-700 rounded-full"
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={() => {
+                setIsPlaying(!isPlaying);
+              }}
             >
               {isPlaying ? (
                 <Pause className="w-5 h-5" />
@@ -121,6 +139,10 @@ const TaskCard = ({ task, setActionClicked, setAction, setTaskDetails }) => {
               )}
             </Button>
             <Button
+              onClick={() => {
+                onReset(task._id);
+                setIsPlaying(false);
+              }}
               size="icon"
               variant="ghost"
               className="text-white bg-indigo-600 hover:bg-indigo-700 rounded-full"
