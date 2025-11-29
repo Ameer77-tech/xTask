@@ -37,7 +37,6 @@ const ProjectCard = ({
   index
 }) => {
   const isMobile = useIsMobile();
-  console.log(project);
   
   const progress =
     project.totalTasks > 0
@@ -45,7 +44,7 @@ const ProjectCard = ({
       : 0;
 
   const statusColor = clsx(
-    project.status.toLowerCase() === "in progress" && "text-amber-500",
+    project.status.toLowerCase() === "in-progress" && "text-amber-500",
     project.status.toLowerCase() === "started" && "text-cyan-600",
     project.status.toLowerCase() === "not started" && "text-gray-500",
     project.status.toLowerCase() === "planning" && "text-fuchsia-600",
@@ -156,7 +155,7 @@ const ProjectCard = ({
           <div className="flex items-center gap-2 text-muted-foreground">
             <CheckCircle className="text-green-500" size={16} />
             <span>
-              {project.totaltasksCompleted}/{project.totaltasksCompleted}
+              {project.totaltasksCompleted}/{project.totalTasks}
             </span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">

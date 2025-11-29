@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import clsx from "clsx";
 
 const formatTime = (seconds) => {
   const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
@@ -28,6 +29,7 @@ const TaskCard = ({
   onPlay,
   onPause,
   onReset,
+  runningTask,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -40,7 +42,16 @@ const TaskCard = ({
   }, [isPlaying]);
 
   return (
-    <Card className="bg-[#111]  border-gray-800 rounded-2xl shadow-md relative">
+    <Card
+      className={clsx(
+        "bg-[#111] border-gray-800 rounded-2xl shadow-md relative transition-all ease duration-300",
+        runningTask === ""
+          ? ""
+          : runningTask === task._id
+          ? "scale-105  "
+          : "opacity-35"
+      )}
+    >
       {task.completed && (
         <div
           className="absolute inset-0 z-20 flex flex-col items-center justify-center
@@ -132,7 +143,7 @@ const TaskCard = ({
                 setIsPlaying(!isPlaying);
               }}
             >
-              {isPlaying ? (
+              {isPlaying && runningTask === task._id ? (
                 <Pause className="w-5 h-5" />
               ) : (
                 <Play className="w-5 h-5" />

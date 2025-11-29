@@ -12,7 +12,6 @@ export const addTask = async (req, res) => {
   }
   const { title, description, type, dueDate, priority, linkedProject } =
     req.body;
-  console.log(req.body);
 
   if (!title || title.trim().length === 0) {
     return res.status(400).json({

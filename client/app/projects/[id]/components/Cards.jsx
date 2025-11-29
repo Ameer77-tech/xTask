@@ -60,6 +60,7 @@ const AllTasks = () => {
         setToastData({ message: res.reply, type: "success", isSuccess: true });
         removeTask(res.deleted._id);
         setActionClicked(false);
+        setrunningTask("");
       }
     } catch (err) {
       setShowToast(true);
@@ -99,6 +100,7 @@ const AllTasks = () => {
         setToastData({ message: res.reply, type: "success", isSuccess: true });
         updateTask(res.updatedTask._id, res.updatedTask);
         setActionClicked(false);
+        setrunningTask("");
       }
     } catch (err) {
       setShowToast(true);
@@ -259,6 +261,7 @@ const AllTasks = () => {
               setTaskDetails={setTaskDetails}
               key={task._id}
               task={task}
+              runningTask={runningTask}
             />
           ))
         )}

@@ -27,7 +27,7 @@ const page = async ({ params, searchParams }) => {
         "content-type": "application/json",
         Cookie: cookieHeader,
       },
-      next: { revalidate: 3600 },
+      cache : "no-store"
     }
   );
 
