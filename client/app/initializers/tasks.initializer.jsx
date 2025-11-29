@@ -7,15 +7,6 @@ const TasksInitializer = ({ taskData }) => {
   const setLoading = useTaskStore((state) => state.setLoading);
 
   useEffect(() => {
-    if (!taskData) return;
-
-    try {
-      localStorage.removeItem("task-store");
-      localStorage.removeItem("persist:task-store");
-    } catch (e) {
-      console.log(e);
-    }
-
     setTasks({ tasks: taskData });
     setLoading(false);
   }, [taskData, setTasks]);

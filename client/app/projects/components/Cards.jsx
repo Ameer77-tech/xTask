@@ -6,10 +6,11 @@ import ShowDialog from "@/components/Dialog";
 import { AnimatePresence } from "motion/react";
 import Toast from "@/components/Toast";
 import AddProjectForm from "./AddProjectForm";
+import { Spinner } from "@/components/ui/spinner";
 
 const Cards = () => {
   const projects = useProjectStore((state) => state.visibleProjects);
-
+  const loading = useProjectStore((state) => state.isPending);
   const deleteProject = useProjectStore((state) => state.deleteProject);
   const updateProject = useProjectStore((state) => state.updateProject);
   const [hoveredProject, setHoveredProject] = useState("");
@@ -89,7 +90,7 @@ const Cards = () => {
           "content-type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ completed: true }),
+        body: JSON.stringify({ completed: true, status: "completed" }),
       });
       const response = await res.json();
       if (!response.success) {
@@ -161,7 +162,9 @@ const Cards = () => {
       </AnimatePresence>
       <Toast show={showToast} toastData={toastData} />
       <div className="grid md:mt-5 md:p-0 p-5 md:grid-cols-2 lg:grid-cols-3 grid-cols-1 place-items-center gap-5">
-        {projects.length < 1 ? (
+        {loading ? (
+          <div className="lg:h-50 lg:col-span-3 h-20 mt-20 lg:mt-0"><Spinner className={"text-primary size-5"}/></div>
+        ) : projects.length < 1 ? (
           <p className="text-muted-foreground text-center lg:col-span-3 mt-10 md:col-span-2 col-span-1">
             No Projects
           </p>

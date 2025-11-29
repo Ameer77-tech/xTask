@@ -9,6 +9,7 @@ const useTaskStore = create((set) => ({
   addTask: (task) =>
     set((state) => ({
       tasks: [...state.tasks, task],
+      visibleTasks: [...state.tasks, task],
     })),
   removeTask: (taskId) => {
     set((state) => ({
@@ -28,6 +29,9 @@ const useTaskStore = create((set) => ({
   updateTimer: (taskId) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
+        task._id === taskId ? { ...task, timer: task.timer + 1 } : task
+      ),
+      visibleTasks: state.tasks.map((task) =>
         task._id === taskId ? { ...task, timer: task.timer + 1 } : task
       ),
     })),

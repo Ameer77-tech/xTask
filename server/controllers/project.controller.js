@@ -64,20 +64,45 @@ export const getProjects = async (req, res) => {
   const userId = req.user.id;
   const filter = req.params.filter;
   try {
-    const allProjects = await projectsModel.find({ createdBy: userId }).lean();
+    const allProjects = await projectsModel
+      .find({ createdBy: userId })
+      .lean()
+      .populate("tasks");
     const f = filter.toLowerCase();
 
     let payload;
-    
+    payload = allProjects.map((p) => {
+      const { tasks, ...rest } = p;
+
+      const totalTasks = tasks?.length;
+
+      const totaltasksCompleted = tasks?.reduce(
+        (acc, task) => (task.completed ? acc + 1 : acc),
+        0
+      );
+      const isPending = tasks.some((task) => task.completed || task.timer > 0);
+
+      return {
+        ...rest,
+        totalTasks,
+        totaltasksCompleted,
+        status:
+          p.status === "planning" && !isPending
+            ? "planning"
+            : p.completed
+            ? "completed"
+            : isPending
+            ? "in-progress"
+            : "not-started",
+      };
+    });
+
     if (f === "in-progress") {
-      payload = allProjects.filter((p) => p.tasks?.length > 0 && !p.completed);
+      payload = payload.filter((p) => p.tasks?.length > 0 && !p.completed);
     } else if (f === "completed") {
-      payload = allProjects.filter((p) => p.completed);
+      payload = payload.filter((p) => p.completed);
     } else {
-      payload = allProjects.map((p) => ({
-        ...p,
-        totalTasks: p.tasks?.length ?? 0,
-      }));
+      payload = payload;
     }
 
     return res
@@ -94,11 +119,20 @@ export const getProject = async (req, res) => {
   const userId = req.user.id;
   const id = req.params.projectId;
   try {
-    const project = await projectsModel.findOne({ createdBy: userId, _id: id });
+    const project = await projectsModel
+      .findOne({ createdBy: userId, _id: id })
+      .populate("tasks");
+    const payload = {
+      projectId: project._id,
+      projectTitle: project.title,
+      projectDescription: project.description,
+      projectPriority: project.priority,
+      tasks: project.tasks,
+    };
     return res.status(200).json({
       reply: "Project Fetched",
       success: true,
-      project,
+      payload,
     });
   } catch (err) {
     res

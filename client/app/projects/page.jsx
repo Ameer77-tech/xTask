@@ -27,9 +27,10 @@ const page = async ({ params, searchParams }) => {
         "content-type": "application/json",
         Cookie: cookieHeader,
       },
-      cache: "no-store",
+      cache : "no-store"
     }
   );
+
   const data = await res.json();
   const projects = data.success ? data.payload : [];
   return (

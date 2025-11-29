@@ -1,10 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, Plus, Search } from "lucide-react";
 import clsx from "clsx";
 import { useIsMobile } from "@/hooks/use-mobile";
+import useTaskStore from "@/app/Store/task.store";
 
 const Filter = () => {
   const [filter, setFilter] = useState("all");
@@ -12,6 +13,34 @@ const Filter = () => {
   const [search, setSearch] = useState("");
   const [showFilters, setshowFilters] = useState(false);
   const isMobile = useIsMobile();
+  const tasks = useTaskStore((state) => state.tasks);
+  const setVisibleTasks = useTaskStore((state) => state.setVisibleTasks);
+  useEffect(() => {
+    if (tasks.length < 1) return;
+
+    const filtered = tasks.filter((task) => {
+      const matchesSearch =
+        task.title.toLowerCase().includes(search.toLowerCase()) ||
+        task.description.toLowerCase().includes(search.toLowerCase());
+
+      const matchesStatus =
+        filter === "all"
+          ? true
+          : filter.toLowerCase() === "completed"
+          ? task.completed
+          : task.timer > 0;
+      const priorityMap = {
+        high: 1,
+        medium: 2,
+        low: 3,
+      };
+      const matchesPriority =
+        priority === "all" ? true : task.priority === priorityMap[priority];
+
+      return matchesSearch && matchesStatus && matchesPriority;
+    });
+    setVisibleTasks(filtered);
+  }, [filter, priority, search, tasks]);
 
   return (
     <section className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mt-5 w-full">
@@ -39,7 +68,7 @@ const Filter = () => {
             Status
           </h3>
           <div className="grid grid-cols-2 lg:flex lg:gap-2 place-items-center gap-3 lg:p-0">
-            {["all", "completed", "pending", "in-progress"].map((item) => (
+            {["all", "completed", "in-progress"].map((item) => (
               <Button
                 key={item}
                 variant={filter === item ? "default" : "outline"}

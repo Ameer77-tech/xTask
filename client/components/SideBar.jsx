@@ -35,7 +35,7 @@ const SidebarLogo = () => {
   return (
     <div
       className={clsx(
-        "flex items-center lg:px-0 lg:py-0 px-3 py-2 gap-3 lg:mt-5"
+        "flex items-center lg:px-0 lg:py-0 px-3 py-2 lg:mt-5"
       )}
     >
       <div className={clsx("shrink-0")}>

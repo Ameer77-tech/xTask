@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import clsx from "clsx";
+import AddTaskBtn from "./AddTaskBtn";
 
-const Header = () => {
+const Header = ({ title, desc, priority, projectId }) => {
   return (
     <Card
       className={
@@ -26,19 +28,26 @@ const Header = () => {
             "text-2xl lg:text-4xl text-center lg:flex lg:flex-row flex flex-col lg:items-end items-center"
           }
         >
-          Website Redesign.{" "}
-          <span className="text-sm font-normal tracking-tight ml-5">
-            Priority : High
-          </span>
+          {title}.{" "}
+          <p className="text-sm font-normal tracking-tight ml-5">
+            Priority :{" "}
+            <span
+              className={clsx(
+                priority === 1
+                  ? "text-destructive"
+                  : priority === 2
+                  ? "text-yellow-600"
+                  : "text-primary"
+              )}
+            >
+              {priority === 1 ? "High" : priority === 2 ? "Medium" : "Low"}
+            </span>
+          </p>
         </CardTitle>
-        <CardDescription className={"text-center"}>
-          Revamp the company website with a modern UI and improved UX flow.
-        </CardDescription>
+        <CardDescription className={"text-center"}>{desc}.</CardDescription>
       </CardHeader>
       <CardFooter>
-        <Button className="ml-auto bg-green-500 hover:bg-green-600">
-          <Plus className="mr-2 h-4 w-4" /> Add Task
-        </Button>
+        <AddTaskBtn id={projectId} />
       </CardFooter>
     </Card>
   );
