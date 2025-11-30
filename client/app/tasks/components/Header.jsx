@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card";
 
 import ViewToggle from "./ViewToggle";
+import { Suspense } from "react";
 
 const Header = ({ view }) => {
   return (
@@ -24,7 +25,8 @@ const Header = ({ view }) => {
           Manage your tasks efficiently and effectively
         </CardDescription>
       </CardHeader>
-      <ViewToggle view={view} />
+      <Suspense><ViewToggle view={view} /></Suspense>
+
     </Card>
   );
 };
