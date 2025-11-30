@@ -57,6 +57,7 @@ const Tasks = ({ view, filter }) => {
     text: "",
     id: "",
   });
+  
   useEffect(() => {
     tasks.forEach((task, idx) => {
       if (task._id === editingTask) {

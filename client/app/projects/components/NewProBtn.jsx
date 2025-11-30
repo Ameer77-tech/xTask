@@ -19,7 +19,7 @@ const NewProBtn = () => {
         <Plus />
         New Project
       </Button>
-      <MobileBtn />
+      <MobileBtn setIsOpen={setIsOpen}/>
     </>
   );
 };

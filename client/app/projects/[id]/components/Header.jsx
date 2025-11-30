@@ -29,7 +29,7 @@ const Header = ({ title, desc, priority, projectId }) => {
           }
         >
           {title}.{" "}
-          <p className="text-sm font-normal tracking-tight ml-5">
+          <p className="text-sm font-normal tracking-tight lg:ml-5 md:ml-5">
             Priority :{" "}
             <span
               className={clsx(

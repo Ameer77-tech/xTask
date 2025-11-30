@@ -28,7 +28,7 @@ const Toast = ({ show, toastData }) => {
           exit={{ y: -50, opacity: 0, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           className={clsx(
-            "fixed top-6 left-1/2 -translate-x-1/2 z-9999 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-md border border-white/10",
+            "fixed top-6 left-1/2 -translate-x-1/2 z-9999 flex items-center gap-3 px-5 lg:py-3 py-1 rounded-2xl shadow-2xl backdrop-blur-md border border-white/10",
             variant
           )}
         >

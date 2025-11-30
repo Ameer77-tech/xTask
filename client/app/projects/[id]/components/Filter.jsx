@@ -26,9 +26,11 @@ const Filter = () => {
       const matchesStatus =
         filter === "all"
           ? true
-          : filter.toLowerCase() === "completed"
-          ? task.completed
-          : task.timer > 0;
+          : filter === "completed"
+          ? task.completed === true
+          : filter === "in-progress"
+          ? task.timer > 0 && task.completed === false
+          : true;
       const priorityMap = {
         high: 1,
         medium: 2,
