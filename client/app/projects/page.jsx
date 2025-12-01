@@ -5,6 +5,7 @@ import Loading from "@/components/Loading";
 import ProjectInitializer from "../initializers/project.initializer";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import UserInitializer from "../initializers/user.initializer";
 
 const page = async ({ params, searchParams }) => {
   const urlData = await searchParams;
@@ -19,6 +20,35 @@ const page = async ({ params, searchParams }) => {
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
+    
+  const getUserData = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-user`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: cookieHeader,
+        },
+
+        cache: "no-store",
+      }
+    );
+
+    let data = await res.json();
+
+    if (data.reply === "Unauthorized") {
+      redirect("/login");
+    } else if (!data.success) {
+      alert(data.reply);
+      return;
+    } else {
+      return data;
+    }
+  };
+
+  const userData = await getUserData();
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/projects/get-projects/${filter}`,
     {
@@ -27,15 +57,16 @@ const page = async ({ params, searchParams }) => {
         "content-type": "application/json",
         Cookie: cookieHeader,
       },
-      cache : "no-store"
+      cache: "no-store",
     }
   );
-
   const data = await res.json();
   const projects = data.success ? data.payload : [];
+
   return (
     <>
       <ProjectInitializer data={projects} />
+      <UserInitializer userData={userData} />
       <div className="h-screen w-screen flex justify-start">
         <AppSideBar />
         <Suspense fallback={<Loading />}>

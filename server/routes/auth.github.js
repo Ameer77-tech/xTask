@@ -18,7 +18,7 @@ githubAuthRouter.get(
       secure: false,
       sameSite: "lax",
     });
-    res.redirect("http://localhost:3000/");
+    res.redirect("http://192.168.0.5:3000/");
   }
 );
 

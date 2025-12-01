@@ -22,7 +22,7 @@ const frontend = process.env.CLIENT_URL;
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [frontend],
+    origin: [frontend, "http://192.168.0.5:3000"],
     credentials: true,
   })
 );

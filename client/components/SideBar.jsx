@@ -89,7 +89,6 @@ const SideBarChild = () => {
     { name: "Dashboard", icon: Home, link: "/" },
     { name: "Tasks", icon: NotepadText, link: "/tasks" },
     { name: "Projects", icon: BookMarked, link: "/projects" },
-    { name: "Analytics", icon: HeartPulse, link: "/analytics" },
     { name: "Notifications", icon: Bell, link: "/notifications" },
     { name: "Settings", icon: Settings2, link: "/settings" },
   ];

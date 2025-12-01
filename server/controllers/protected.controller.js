@@ -1,6 +1,6 @@
 import userModel from "../models/user.model.js";
 
-export const getDashboardData = async (req, res) => {
+export const getUserData = async (req, res) => {
   const id = req.user.id;
   try {
     const user = await userModel.findOne({ _id: id });
@@ -19,3 +19,7 @@ export const getDashboardData = async (req, res) => {
     res.status(500).json({ reply: "Internal Server Error", success: false });
   }
 };
+
+
+export const getDashboardData = async (req, res) => {};
+
