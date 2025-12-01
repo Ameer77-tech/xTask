@@ -129,6 +129,7 @@ export const getProject = async (req, res) => {
       projectPriority: project.priority,
       tasks: project.tasks,
     };
+
     return res.status(200).json({
       reply: "Project Fetched",
       success: true,

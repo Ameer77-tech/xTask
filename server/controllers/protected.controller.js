@@ -69,6 +69,29 @@ export const getDashboardData = async (req, res) => {
     Sat: 0,
   };
 
+  let todaysFocusData = [];
+
+  const getTodaysFocusData = (allTasks) => {
+    todaysFocusData = allTasks.map((task, idx) => {
+      const dbDate = normalize(task.dueDate);
+      const today = normalize(new Date());
+      let diffDays = (dbDate - today) / (1000 * 60 * 60 * 24);
+      if (diffDays === 0 || diffDays === -1) {
+        return {
+          id: task._id,
+          name: task.title,
+          priority:
+            task.priority === 1
+              ? "High"
+              : task.priority === 2
+              ? "Medium"
+              : "Low",
+          type: task.type,
+          date: diffDays === 0 ? "today" : "yesterday",
+        };
+      }
+    });
+  };
   function getWeekdayName(date) {
     const weekMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return weekMap[new Date(date).getDay()];
@@ -155,9 +178,9 @@ export const getDashboardData = async (req, res) => {
     const allTasks = await tasksModel.find({ createdBy: userId });
     getBarChartData(allTasks);
     getLineChartData(allTasks);
-    console.log(lineChartData);
-
     getTaskCardData(allTasks);
+    getTodaysFocusData(allTasks);
+
     try {
       const allProjects = await projectModel.find({ createdBy: userId });
       getProjectCardData(allProjects);
