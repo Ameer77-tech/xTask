@@ -22,7 +22,11 @@ import AddTaskForm from "./AddTaskForm";
 import { usePathname } from "next/navigation";
 
 const Tasks = ({ view, filter }) => {
-  const tasks = useTaskStore((state) => state.visibleTasks);
+  const visibleTasks = useTaskStore((state) => state.visibleTasks);
+  const tasks = useMemo(
+    () => visibleTasks.filter((t) => t.type === "personal"),
+    [visibleTasks]
+  );
   const isLoading = useTaskStore((state) => state.isLoading);
   const pathName = usePathname();
 
@@ -57,7 +61,7 @@ const Tasks = ({ view, filter }) => {
     text: "",
     id: "",
   });
-  
+
   useEffect(() => {
     tasks.forEach((task, idx) => {
       if (task._id === editingTask) {
@@ -129,7 +133,7 @@ const Tasks = ({ view, filter }) => {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ status: "completed" }),
+        body: JSON.stringify({ status: "completed", completed: true }),
         credentials: "include",
       });
       const data = await response.json();
@@ -324,28 +328,31 @@ const Tasks = ({ view, filter }) => {
                   </TableCell>
                 </TableRow>
               ) : (
-                allTasks.map((task, idx) => (
-                  <Task
-                    filter={filter}
-                    status={task.status}
-                    key={task._id}
-                    id={task._id}
-                    index={idx}
-                    name={task.title}
-                    desc={task.description}
-                    priority={task.priority}
-                    timer={task.timer}
-                    formatTime={formatTime}
-                    due={task.dueDate}
-                    setActionClicked={setActionClicked}
-                    settaskData={settaskData}
-                    setaction={setaction}
-                    runningTask={runningTask}
-                    onPlay={onPlay}
-                    onPause={onPause}
-                    onReset={onReset}
-                  />
-                ))
+                allTasks.map(
+                  (task, idx) =>
+                    task.type === "personal" && (
+                      <Task
+                        filter={filter}
+                        status={task.status}
+                        key={task._id}
+                        id={task._id}
+                        index={idx}
+                        name={task.title}
+                        desc={task.description}
+                        priority={task.priority}
+                        timer={task.timer}
+                        formatTime={formatTime}
+                        due={task.dueDate}
+                        setActionClicked={setActionClicked}
+                        settaskData={settaskData}
+                        setaction={setaction}
+                        runningTask={runningTask}
+                        onPlay={onPlay}
+                        onPause={onPause}
+                        onReset={onReset}
+                      />
+                    )
+                )
               )}
             </AnimatePresence>
           </TableBody>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import TaskCard from "./Card";
 import useTaskStore from "@/app/Store/task.store";
 import ShowDialog from "@/components/Dialog";
@@ -12,7 +12,11 @@ const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
 
 const AllTasks = () => {
   const pathName = usePathname();
-  const allTasks = useTaskStore((state) => state.visibleTasks);
+  const visibleTasks = useTaskStore((state) => state.visibleTasks);
+  const allTasks = useMemo(
+    () => visibleTasks.filter((t) => t.type === "project"),
+    [visibleTasks]
+  );
   const removeTask = useTaskStore((state) => state.removeTask);
   const updateTask = useTaskStore((state) => state.updateTask);
   const [editingTask, setEditingTask] = useState("");

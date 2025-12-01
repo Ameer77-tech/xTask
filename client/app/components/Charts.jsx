@@ -18,12 +18,12 @@ import {
 } from "recharts";
 
 const Charts = () => {
-  const pieData = [
+  const BarData = [
     { name: "Completed", value: 90 },
     { name: "Pending", value: 30 },
     { name: "Overdue", value: 200 },
   ];
-  const PIE_COLORS = ["#2f639e", "#f7f71e", "#EF4444"];
+
   const lineData = [
     { day: "Mon", completed: 5 },
     { day: "Tue", completed: 8 },
@@ -39,7 +39,7 @@ const Charts = () => {
       <div className="w-full h-80 rounded-2xl p-4 shadow-lg">
         <h3 className="text-lg font-semibold mb-2">Task Status</h3>
         <ResponsiveContainer width="100%" height="90%">
-          <BarChart data={pieData}>
+          <BarChart data={BarData}>
             <XAxis dataKey="name" tick={{ fill: "#94a3b8" }} />
             <YAxis tick={{ fill: "#94a3b8" }} />
             <Tooltip
