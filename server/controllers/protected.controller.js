@@ -70,6 +70,7 @@ export const getDashboardData = async (req, res) => {
   };
 
   let todaysFocusData = [];
+  let upcomingData = [];
 
   const getTodaysFocusData = (allTasks) => {
     todaysFocusData = allTasks.map((task, idx) => {
@@ -89,6 +90,21 @@ export const getDashboardData = async (req, res) => {
           type: task.type,
           date: diffDays === 0 ? "today" : "yesterday",
         };
+      }
+    });
+  };
+  const getUpcomingData = (allTasks) => {
+    allTasks.forEach((task, idx) => {
+      const dbDate = normalize(task.dueDate);
+      const today = normalize(new Date());
+      let diffDays = (dbDate - today) / (1000 * 60 * 60 * 24);
+      if (!task.completed && diffDays > 0 && diffDays <= 3) {
+        upcomingData.push({
+          id: task._id,
+          name: task.title,
+          type: task.type,
+          date: new Date(task.dueDate).toLocaleString(),
+        });
       }
     });
   };
@@ -180,6 +196,8 @@ export const getDashboardData = async (req, res) => {
     getLineChartData(allTasks);
     getTaskCardData(allTasks);
     getTodaysFocusData(allTasks);
+    getUpcomingData(allTasks);
+    console.log(upcomingData);
 
     try {
       const allProjects = await projectModel.find({ createdBy: userId });
