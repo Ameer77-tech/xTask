@@ -1,5 +1,7 @@
 import projectsModel from "../models/project.model.js";
+import tasksModel from "../models/task.model.js";
 import userModel from "../models/user.model.js";
+import mongoose from "mongoose";
 
 export const addProject = async (req, res) => {
   const userId = req.user.id;
@@ -144,6 +146,7 @@ export const getProject = async (req, res) => {
 export const editProject = async (req, res) => {
   const userId = req.user.id;
   const id = req.params.projectId;
+
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       success: false,
@@ -157,13 +160,42 @@ export const editProject = async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    res.status(200).json({ reply: "Project Updated", success: true, updated });
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        reply: "Project not found",
+      });
+    }
+    console.log(req.body.completed);
+
+    if (req.body.completed && updated.tasks?.length > 0) {
+      try {
+        const objectIds = updated.tasks.map(
+          (taskId) => new mongoose.Types.ObjectId(taskId)
+        );
+        await tasksModel.deleteMany({ _id: { $in: objectIds } });
+      } catch (err) {
+        return res.status(500).json({
+          reply: "Failed to delete tasks",
+          success: false,
+        });
+      }
+    }
+    res.status(200).json({
+      reply: "Project Updated",
+      success: true,
+      updated,
+    });
   } catch (err) {
-    res
-      .status(500)
-      .json({ reply: "Internal Server Error", success: false, err });
+    res.status(500).json({
+      reply: "Internal Server Error",
+      success: false,
+      err,
+    });
   }
 };
+
 export const deleteProject = async (req, res) => {
   const userId = req.user.id;
   const id = req.params.projectId;
@@ -179,6 +211,19 @@ export const deleteProject = async (req, res) => {
       return res
         .status(409)
         .json({ reply: "No Projects to Delete", success: false });
+    }
+    try {
+      const objectIds = deleted.tasks.map(
+        (taskId) => new mongoose.Types.ObjectId(taskId)
+      );
+      await tasksModel.deleteMany({ _id: { $in: objectIds } });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        reply: "Failed to delete tasks",
+        success: false,
+        err,
+      });
     }
     return res
       .status(200)

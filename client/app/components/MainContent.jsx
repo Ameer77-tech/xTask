@@ -4,13 +4,15 @@ import Upcoming from "./Upcoming";
 import Completed from "./Completed";
 
 const MainContent = ({ data }) => {
-  const todays
+  const todaysFocus = data.todaysFocusData;
+  const upcoming = data.upcoming;
+  const completed = data.completed;
   return (
     <div className="p-5 lg:grid-cols-2 grid-cols-1 grid gap-2">
-      <TodaysFocus />
+      <TodaysFocus data={todaysFocus} />
       <div className="flex flex-col gap-2">
-        <Upcoming />
-        <Completed />
+        <Upcoming data={upcoming} />
+        <Completed data={completed} />
       </div>
     </div>
   );

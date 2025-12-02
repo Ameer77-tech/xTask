@@ -10,13 +10,16 @@ import { usePathname } from "next/navigation";
 
 const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
 
-const AllTasks = () => {
+const AllTasks = ({ projectId }) => {
   const pathName = usePathname();
   const visibleTasks = useTaskStore((state) => state.visibleTasks);
   const allTasks = useMemo(
-    () => visibleTasks.filter((t) => t.type === "project"),
+    () =>
+      visibleTasks.filter((t) => t.type === "project" && t.linkedProject == projectId),
     [visibleTasks]
   );
+  console.log(allTasks);
+
   const removeTask = useTaskStore((state) => state.removeTask);
   const updateTask = useTaskStore((state) => state.updateTask);
   const [editingTask, setEditingTask] = useState("");

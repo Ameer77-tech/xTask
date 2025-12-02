@@ -55,6 +55,7 @@ const Cards = () => {
         });
         setShowToast(true);
       } else {
+        console.log(response.id);
         deleteProject(response.id);
         settoastData({
           message: response.reply,
@@ -101,8 +102,6 @@ const Cards = () => {
         });
         setShowToast(true);
       } else {
-        console.log(response.updated._id);
-
         updateProject(response.updated._id, { completed: true });
         settoastData({
           message: response.reply,
@@ -163,7 +162,9 @@ const Cards = () => {
       <Toast show={showToast} toastData={toastData} />
       <div className="grid md:mt-5 md:p-0 p-5 md:grid-cols-2 lg:grid-cols-3 grid-cols-1 place-items-center gap-5">
         {loading ? (
-          <div className="lg:h-50 lg:col-span-3 h-20 mt-20 lg:mt-0"><Spinner className={"text-primary size-5"}/></div>
+          <div className="lg:h-50 lg:col-span-3 h-20 mt-20 lg:mt-0">
+            <Spinner className={"text-primary size-5"} />
+          </div>
         ) : projects.length < 1 ? (
           <p className="text-muted-foreground text-center lg:col-span-3 mt-10 md:col-span-2 col-span-1">
             No Projects

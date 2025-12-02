@@ -176,7 +176,17 @@ export const getDashboardData = async (req, res) => {
               ? "Medium"
               : "Low",
           type: task.type,
-          date: diff === 0 ? "today" : "yesterday",
+          date:
+            diff === 0
+              ? "today"
+              : `yesterday ${new Date(task.dueDate).toLocaleDateString(
+                  "en-US",
+                  {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  }
+                )}`,
         });
       }
     }

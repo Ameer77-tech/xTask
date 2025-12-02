@@ -10,10 +10,10 @@ const Main = ({ data, projectId }) => {
         title={data["payload"].projectTitle}
         desc={data["payload"].projectDescription}
         priority={data["payload"].projectPriority}
-        projectId={projectId} 
+        projectId={projectId}
       />
-      <Filter/>
-      <Cards />
+      <Filter />
+      <Cards projectId={projectId} />
     </div>
   );
 };
