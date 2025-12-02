@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Spinner } from "@/components/ui/spinner";
 import Toast from "@/components/Toast";
 import { useRouter } from "next/navigation";
-import { EyeClosed, Eye } from "lucide-react";
+import { EyeClosed, Eye, Check } from "lucide-react";
 
 const Form = () => {
   const router = useRouter();
@@ -32,6 +32,7 @@ const Form = () => {
   });
   const [showToast, setshowToast] = useState(false);
   const [showPassword, setshowPassword] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -90,6 +91,7 @@ const Form = () => {
           type: "success",
           isSuccess: true,
         });
+        setLoggedIn(true);
         setshowToast(true);
         router.push("/");
       }
@@ -103,97 +105,118 @@ const Form = () => {
   return (
     <>
       <Toast show={showToast} toastData={responseStatus} />
-      <Card className="w-full border-0 sm:w-3/4 md:w-2/3 lg:w-2/5">
-        <CardHeader className="mb-5">
-          <CardTitle className="text-3xl tracking-tighter font-medium text-primary md:text-4xl lg:text-5xl">
-            Welcome Back
-          </CardTitle>
-          <CardDescription className="text-sm md:text-base lg:text-lg">
-            Login to manage your tasks
-          </CardDescription>
-        </CardHeader>
+      {loggedIn ? (
+        <div className="flex min-h-[50vh] flex-col items-center justify-center p-4">
+          <Card className="w-full max-w-sm border-none shadow-2xl shadow-primary/20 ring-1 ring-primary/10 animate-in fade-in zoom-in-95 duration-300">
+            <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+              {/* Animated Icon Container */}
+              <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
+                <div className="absolute inset-0 rounded-full bg-primary/5 animate-ping opacity-75 duration-1000" />
+                <Check className="h-12 w-12 text-primary" strokeWidth={3} />
+              </div>
+              {/* Text Content */}
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                Welcome Back
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                You are successfully logged in.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <Card className="w-full border-0 sm:w-3/4 md:w-2/3 lg:w-2/5">
+          <CardHeader className="mb-5">
+            <CardTitle className="text-3xl tracking-tighter font-medium text-primary md:text-4xl lg:text-5xl">
+              Welcome Back
+            </CardTitle>
+            <CardDescription className="text-sm md:text-base lg:text-lg">
+              Login to manage your tasks
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <Input
-                placeholder="Username"
-                type="text"
-                name="userName"
-                value={formData.userName}
-                onChange={handleChange}
-                className={`lg:py-2 ${
-                  errors.username ? "border-destructive" : ""
-                }`}
-                disabled={pending}
-              />
-              {errors.username && (
-                <p className="text-destructive text-sm">{errors.username}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-1 relative">
-              <Input
-                placeholder="Password"
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`lg:py-2 ${
-                  errors.password ? "border-destructive" : ""
-                }`}
-                disabled={pending}
-              />
-              {errors.password && (
-                <p className="text-destructive text-sm">{errors.password}</p>
-              )}
-              <div
-                onClick={() => setshowPassword((prev) => !prev)}
-                className="absolute right-5 top-1/2 -translate-y-1/2"
-              >
-                {showPassword ? (
-                  <Eye size={"17"} className="text-primary" />
-                ) : (
-                  <EyeClosed size={"17"} />
+          <CardContent className="space-y-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <Input
+                  placeholder="Username"
+                  type="text"
+                  name="userName"
+                  value={formData.userName}
+                  onChange={handleChange}
+                  className={`lg:py-2 ${
+                    errors.username ? "border-destructive" : ""
+                  }`}
+                  disabled={pending}
+                />
+                {errors.username && (
+                  <p className="text-destructive text-sm">{errors.username}</p>
                 )}
               </div>
+
+              <div className="flex flex-col gap-1 relative">
+                <Input
+                  placeholder="Password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`lg:py-2 ${
+                    errors.password ? "border-destructive" : ""
+                  }`}
+                  disabled={pending}
+                />
+                {errors.password && (
+                  <p className="text-destructive text-sm">{errors.password}</p>
+                )}
+                <div
+                  onClick={() => setshowPassword((prev) => !prev)}
+                  className="absolute right-5 top-1/2 -translate-y-1/2"
+                >
+                  {showPassword ? (
+                    <Eye size={"17"} className="text-primary" />
+                  ) : (
+                    <EyeClosed size={"17"} />
+                  )}
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full select-none"
+                disabled={pending}
+              >
+                {pending ? (
+                  <>
+                    <Spinner className="size-5 mr-2" />
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </Button>
+            </form>
+
+            <div className="border-accent w-full h-px border relative my-10  select-none">
+              <span className="text-muted-foreground bg-card absolute left-1/2 -translate-x-1/2 -top-3 w-40 lg:w-50 text-center">
+                Or Continue With
+              </span>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full select-none"
-              disabled={pending}
-            >
-              {pending ? (
-                <>
-                  <Spinner className="size-5 mr-2" />
-                  Logging in...
-                </>
-              ) : (
-                "Login"
-              )}
-            </Button>
-          </form>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
+              <GithubButton />
+              <GoogleButton />
+            </div>
+          </CardContent>
 
-          <div className="border-accent w-full h-px border relative my-10  select-none">
-            <span className="text-muted-foreground bg-card absolute left-1/2 -translate-x-1/2 -top-3 w-40 lg:w-50 text-center">
-              Or Continue With
-            </span>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
-            <GithubButton />
-            <GoogleButton />
-          </div>
-        </CardContent>
-
-        <CardFooter className="text-center text-sm text-muted-foreground mt-2">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="underline cursor-pointer">
-            create account
-          </Link>
-        </CardFooter>
-      </Card>
+          <CardFooter className="text-center text-sm text-muted-foreground mt-2">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="underline cursor-pointer">
+              create account
+            </Link>
+          </CardFooter>
+        </Card>
+      )}
     </>
   );
 };

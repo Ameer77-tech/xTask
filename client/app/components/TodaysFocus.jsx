@@ -18,56 +18,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-const mockTasks = [
-  {
-    id: 1,
-    title: "Finalize Q4 report",
-    priority: "high",
-    type: "project",
-    project: "Project Phoenix",
-    status: "Overdue (Nov 11)",
-  },
-  {
-    id: 2,
-    title: "Call new client",
-    priority: "high",
-    type: "project",
-    project: "Sales",
-    status: "Today",
-  },
-  {
-    id: 3,
-    title: "Draft email campaign",
-    priority: "medium",
-    type: "project",
-    project: "Marketing",
-    status: "Today",
-  },
-  {
-    id: 4,
-    title: "Water the office plant",
-    priority: "low",
-    type: "personal",
-    project: null,
-    status: "Today",
-  },
-  {
-    id: 5,
-    title: "Pick up dry cleaning",
-    priority: "low",
-    type: "personal",
-    project: null,
-    status: "Today",
-  },
-  {
-    id: 6,
-    title: "Review PR #117",
-    priority: "medium",
-    type: "project",
-    project: "Tech",
-    status: "Today",
-  },
-];
 
 const mockProjects = ["Project Phoenix", "Sales", "Marketing", "Tech", "Admin"];
 // --- End Mock Data ---
@@ -86,14 +36,15 @@ const getPriorityBadgeVariant = (priority) => {
   }
 };
 
-const TodaysFocus = () => {
+const TodaysFocus = ({ data }) => {
+  const tasks = [...data];
   // --- State for Filters ---
   const [typeFilter, setTypeFilter] = useState("all");
   const [projectFilter, setProjectFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
 
   // --- Filtering Logic ---
-  const filteredTasks = mockTasks
+  const filteredTasks = tasks
     .filter((task) => {
       // Type Filter (Personal / Project)
       return typeFilter === "all" || task.type === typeFilter;
@@ -104,7 +55,10 @@ const TodaysFocus = () => {
     })
     .filter((task) => {
       // Priority Filter
-      return priorityFilter === "all" || task.priority === priorityFilter;
+      return (
+        priorityFilter === "all" ||
+        task.priority.toLowerCase() === priorityFilter.toLowerCase()
+      );
     });
 
   return (
@@ -119,7 +73,7 @@ const TodaysFocus = () => {
           {/* --- Filter Section --- */}
           <div className="flex flex-wrap md:flex-row gap-2 mt-4 md:mt-0">
             {/* Project Filter */}
-            <Select value={projectFilter} onValueChange={setProjectFilter}>
+            {/* <Select value={projectFilter} onValueChange={setProjectFilter}>
               <SelectTrigger className="w-full md:w-[150px]">
                 <SelectValue placeholder="Filter by project" />
               </SelectTrigger>
@@ -131,7 +85,7 @@ const TodaysFocus = () => {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
 
             {/* Type Filter */}
             <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -173,13 +127,13 @@ const TodaysFocus = () => {
                   key={task.id}
                   className="flex items-center gap-3 p-3 bg-background rounded-lg"
                 >
-                  <Checkbox id={`task-${task.id}`} />
+                  {/* <Checkbox id={`task-${task.id}`} /> */}
                   <div className="flex-1">
                     <label
                       htmlFor={`task-${task.id}`}
                       className="font-medium cursor-pointer"
                     >
-                      {task.title}
+                      {task.name}
                     </label>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
@@ -193,12 +147,12 @@ const TodaysFocus = () => {
                       )}
                       <span
                         className={`text-xs ${
-                          task.status.includes("Overdue")
+                          task.date.includes("yesterday")
                             ? "text-destructive"
                             : "text-muted-foreground"
                         }`}
                       >
-                        {task.status}
+                        {task.date}
                       </span>
                     </div>
                   </div>
