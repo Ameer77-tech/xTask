@@ -17,27 +17,23 @@ import {
   Bar,
 } from "recharts";
 
-const Charts = () => {
+const Charts = ({ data }) => {
   const BarData = [
-    { name: "Completed", value: 90 },
-    { name: "Pending", value: 30 },
-    { name: "Overdue", value: 200 },
+    { name: "Completed", value: data.barChart.completed },
+    { name: "Pending", value: data.barChart.pending },
+    { name: "Overdue", value: data.barChart.overDue },
   ];
 
-  const lineData = [
-    { day: "Mon", completed: 5 },
-    { day: "Tue", completed: 8 },
-    { day: "Wed", completed: 6 },
-    { day: "Thu", completed: 10 },
-    { day: "Fri", completed: 7 },
-    { day: "Sat", completed: 9 },
-    { day: "Sun", completed: 4 },
-  ];
+  const lineData = Object.entries(data.lineChart).map(([day, completed]) => ({
+    day,
+    completed,
+  }));
+  console.log(lineData);
 
   return (
     <div className="p-5 grid lg:grid-cols-2 grid-cols-1 gap-6">
       <div className="w-full h-80 rounded-2xl p-4 shadow-lg">
-        <h3 className="text-lg font-semibold mb-2">Task Status</h3>
+        <h3 className="text-lg font-semibold mb-2">Task Status Graph</h3>
         <ResponsiveContainer width="100%" height="90%">
           <BarChart data={BarData}>
             <XAxis dataKey="name" tick={{ fill: "#94a3b8" }} />
@@ -73,6 +69,7 @@ const Charts = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="day" />
             <YAxis
+              allowDecimals={false}
               label={{ value: "Tasks", angle: -90, position: "insideLeft" }}
             />
             <Tooltip
