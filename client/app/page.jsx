@@ -43,15 +43,33 @@ const page = async () => {
       return data;
     }
   };
-  const getDashboardData = async () => {}
+  const getDashboardData = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/dashboard`,
+        {
+          method: "GET",
+          headers: {
+            "content-type": "application/json",
+            Cookie: cookieHeader,
+          },
+          credentials: "include",
+        }
+      );
+      return await response.json();
+    } catch (err) {
+      console.err(err);
+    }
+  };
 
-  const data = await getUserData();
+  const userData = await getUserData();
+  const DashboardData = await getDashboardData();
 
   return (
     <div className="h-screen w-screen flex justify-start">
-      <UserInitaializer userData={data} />
+      <UserInitaializer userData={userData} />
       <AppSideBar />
-      <Dashboard />
+      <Dashboard data={DashboardData} />
     </div>
   );
 };

@@ -84,6 +84,7 @@ export const getDashboardData = async (req, res) => {
     overDue: 0,
     dueToday: 0,
     totalProjects: 0,
+    completed: 0,
   };
 
   const barChartData = {
@@ -117,7 +118,8 @@ export const getDashboardData = async (req, res) => {
       const diff = getDiffDays(task.dueDate);
 
       if (diff === 0) {
-        taskCardData.dueToday++;
+        if (!task.completed) taskCardData.dueToday++;
+        taskCardData.todaysProgress++;
         if (task.completed) taskCardData.todayCompleted++;
         else taskCardData.todayPending++;
       }
@@ -129,7 +131,7 @@ export const getDashboardData = async (req, res) => {
   const processProjectCards = (projects) => {
     for (const project of projects) {
       const diff = getDiffDays(project.dueDate);
-
+      if (project.completed) projectCardData.completed++;
       if (diff === 0) projectCardData.dueToday++;
       if (diff < 0) projectCardData.overDue++;
 

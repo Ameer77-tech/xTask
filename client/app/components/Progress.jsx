@@ -27,7 +27,7 @@ const ProgressCard = ({ title, completed, total }) => {
         <div>
           <div className="lg:text-4xl text-4xl font-bold">
             {completed}
-            <span className="text-lg text-muted-foreground">/{total}</span>
+            <span className="text-lg text-muted-foreground">/{total} <span className="text-sm font-light ml-1">tasks completed</span></span>
           </div>
           <p className="text-xs text-emerald-500 mt-1">
             {percentage}% completed

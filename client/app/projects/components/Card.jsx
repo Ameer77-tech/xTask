@@ -34,10 +34,10 @@ const ProjectCard = ({
   setData,
   setActionClicked,
   setaction,
-  index
+  index,
 }) => {
   const isMobile = useIsMobile();
-  
+
   const progress =
     project.totalTasks > 0
       ? Math.round((project.totaltasksCompleted / project.totalTasks) * 100)
@@ -56,8 +56,8 @@ const ProjectCard = ({
 
   return (
     <MotionCard
-      initial={{ opacity: 0}}
-      animate={{ opacity: 1}}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: index * 0.3 }}
       onMouseEnter={() => setHoveredProject(project._id)}
       className={clsx(
@@ -155,7 +155,10 @@ const ProjectCard = ({
           <div className="flex items-center gap-2 text-muted-foreground">
             <CheckCircle className="text-green-500" size={16} />
             <span>
-              {project.totaltasksCompleted}/{project.totalTasks}
+              {project.totaltasksCompleted}/
+              {isNaN(project.totalTasks)
+                ? "processing...."
+                : project.totalTasks}
             </span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">

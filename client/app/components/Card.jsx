@@ -30,20 +30,20 @@ const DashboardCard = ({ title, count, description, trend }) => {
           {count}
         </p>
         <CardDescription className={"pt-3"}>
-          {title.toLowerCase() === "total projects" ? (
+          {(title.toLowerCase() === "total projects" || title.toLowerCase() === "completed projects") && (
             <p className="flex items-center lg:justify-center md:justify-end justify-center text-xs lg:text-sm lg:px-5">
               <span>{description}</span>
             </p>
-          ) : trend == "up" ? (
-            <p className="flex items-center text-emerald-500 lg:justify-end md:justify-end justify-center text-xs lg:text-sm lg:px-5">
-              <ArrowUp size={15} className="text-emerald-500" />{" "}
-              <span>10% since last week</span>
-            </p>
-          ) : (
-            <p className="flex items-center text-red-500  lg:justify-end md:justify-end justify-center text-xs lg:text-sm lg:px-5">
-              <ArrowDown size={15} className="text-red-500" />{" "}
-              <span>10% since last week</span>
-            </p>
+          // ) : trend == "up" ? (
+          //   <p className="flex items-center text-emerald-500 lg:justify-end md:justify-end justify-center text-xs lg:text-sm lg:px-5">
+          //     <ArrowUp size={15} className="text-emerald-500" />{" "}
+          //     <span>10% since last week</span>
+          //   </p>
+          // ) : (
+          //   <p className="flex items-center text-red-500  lg:justify-end md:justify-end justify-center text-xs lg:text-sm lg:px-5">
+          //     <ArrowDown size={15} className="text-red-500" />{" "}
+          //     <span>10% since last week</span>
+          //   </p>
           )}
         </CardDescription>
       </CardContent>
