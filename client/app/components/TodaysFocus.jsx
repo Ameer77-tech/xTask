@@ -127,7 +127,7 @@ const TodaysFocus = ({ data }) => {
                   key={task.id}
                   className="flex items-center gap-3 p-3 bg-background rounded-lg"
                 >
-                  <Checkbox id={`task-${task.id}`} />
+                  {/* <Checkbox id={`task-${task.id}`} /> */}
                   <div className="flex-1">
                     <label
                       htmlFor={`task-${task.id}`}

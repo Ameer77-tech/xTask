@@ -165,7 +165,7 @@ export const getDashboardData = async (req, res) => {
     for (const task of tasks) {
       const diff = getDiffDays(task.dueDate);
 
-      if (diff === 0 || diff === -1) {
+      if ((diff === 0 || diff === -1) && !task.completed) {
         todaysFocusData.push({
           id: task._id,
           name: task.title,
