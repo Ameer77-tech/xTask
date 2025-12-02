@@ -201,7 +201,11 @@ export const getDashboardData = async (req, res) => {
           id: task._id,
           name: task.title,
           type: task.type,
-          date: new Date(task.dueDate).toLocaleString(),
+          date: new Date(task.dueDate).toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          }),
         });
       }
     }
@@ -215,7 +219,11 @@ export const getDashboardData = async (req, res) => {
         completedData.push({
           name: task.title,
           type: task.type,
-          date: new Date(task.updatedAt).toLocaleDateString("en-GB"),
+          date: new Date(task.updatedAt).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          }),
         });
       }
     }
