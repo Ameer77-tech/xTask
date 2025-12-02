@@ -22,26 +22,56 @@ export const getUserData = async (req, res) => {
   }
 };
 
-export const getDashboardData = async (req, res) => {
-  /* CARDS */
-  //overdue tasks and projects
-  //due toady tasks and projects
-  // todays's progress of tasks
-  // pending today tasks
-  // total projects count
-  /* CHARTS */
-  //all completed,pending, overdue tasks
-  //tasks completed every day over the week
-  // todays and 2 days overdue tasks from personal and projects
-  // upcoming tasks from projects and tasks upto 3 days
-  // completed tasks today from projects and tasks over a week
+// =========================
+//  Dashboard Controller
+// =========================
 
+export const getDashboardData = async (req, res) => {
   const userId = req.user.id;
-  function normalize(d) {
+
+  // -------------------------
+  // Utility Helpers
+  // -------------------------
+
+  const normalize = (d) => {
     const nd = new Date(d);
     nd.setHours(0, 0, 0, 0);
     return nd;
-  }
+  };
+
+  const today = normalize(new Date());
+
+  const getDiffDays = (date) =>
+    (normalize(date) - today) / (1000 * 60 * 60 * 24);
+
+  const getWeekdayName = (date) => {
+    const weekMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return weekMap[new Date(date).getDay()];
+  };
+
+  const getCurrentWeekRange = () => {
+    const day = today.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    return { monday, sunday };
+  };
+
+  const isInThisWeek = (date) => {
+    const d = normalize(date);
+    const { monday, sunday } = getCurrentWeekRange();
+    return d >= monday && d <= sunday;
+  };
+
+  // -------------------------
+  // Dashboard Data Containers
+  // -------------------------
+
   const taskCardData = {
     overDue: 0,
     dueToday: 0,
@@ -49,16 +79,19 @@ export const getDashboardData = async (req, res) => {
     todayPending: 0,
     todayCompleted: 0,
   };
+
   const projectCardData = {
     overDue: 0,
     dueToday: 0,
     totalProjects: 0,
   };
+
   const barChartData = {
     completed: 0,
     pending: 0,
     overDue: 0,
   };
+
   const lineChartData = {
     Sun: 0,
     Mon: 0,
@@ -71,14 +104,67 @@ export const getDashboardData = async (req, res) => {
 
   let todaysFocusData = [];
   let upcomingData = [];
+  let completedData = [];
 
-  const getTodaysFocusData = (allTasks) => {
-    todaysFocusData = allTasks.map((task, idx) => {
-      const dbDate = normalize(task.dueDate);
-      const today = normalize(new Date());
-      let diffDays = (dbDate - today) / (1000 * 60 * 60 * 24);
-      if (diffDays === 0 || diffDays === -1) {
-        return {
+  // -------------------------
+  // Processing Functions
+  // -------------------------
+
+  const processTaskCards = (tasks) => {
+    for (const task of tasks) {
+      if (task.type !== "personal") continue;
+
+      const diff = getDiffDays(task.dueDate);
+
+      if (diff === 0) {
+        taskCardData.dueToday++;
+        if (task.completed) taskCardData.todayCompleted++;
+        else taskCardData.todayPending++;
+      }
+
+      if (diff < 0) taskCardData.overDue++;
+    }
+  };
+
+  const processProjectCards = (projects) => {
+    for (const project of projects) {
+      const diff = getDiffDays(project.dueDate);
+
+      if (diff === 0) projectCardData.dueToday++;
+      if (diff < 0) projectCardData.overDue++;
+
+      projectCardData.totalProjects++;
+    }
+  };
+
+  const processBarChart = (tasks) => {
+    for (const task of tasks) {
+      const diff = getDiffDays(task.dueDate);
+
+      if (task.completed) {
+        barChartData.completed++;
+      } else {
+        barChartData.pending++;
+        if (diff < 0) barChartData.overDue++;
+      }
+    }
+  };
+
+  const processLineChart = (tasks) => {
+    for (const task of tasks) {
+      if (task.completed && isInThisWeek(task.updatedAt)) {
+        const day = getWeekdayName(task.updatedAt);
+        lineChartData[day]++;
+      }
+    }
+  };
+
+  const processTodayFocus = (tasks) => {
+    for (const task of tasks) {
+      const diff = getDiffDays(task.dueDate);
+
+      if (diff === 0 || diff === -1) {
+        todaysFocusData.push({
           id: task._id,
           name: task.title,
           priority:
@@ -88,17 +174,17 @@ export const getDashboardData = async (req, res) => {
               ? "Medium"
               : "Low",
           type: task.type,
-          date: diffDays === 0 ? "today" : "yesterday",
-        };
+          date: diff === 0 ? "today" : "yesterday",
+        });
       }
-    });
+    }
   };
-  const getUpcomingData = (allTasks) => {
-    allTasks.forEach((task, idx) => {
-      const dbDate = normalize(task.dueDate);
-      const today = normalize(new Date());
-      let diffDays = (dbDate - today) / (1000 * 60 * 60 * 24);
-      if (!task.completed && diffDays > 0 && diffDays <= 3) {
+
+  const processUpcoming = (tasks) => {
+    for (const task of tasks) {
+      const diff = getDiffDays(task.dueDate);
+
+      if (!task.completed && diff > 0 && diff <= 3) {
         upcomingData.push({
           id: task._id,
           name: task.title,
@@ -106,109 +192,62 @@ export const getDashboardData = async (req, res) => {
           date: new Date(task.dueDate).toLocaleString(),
         });
       }
-    });
+    }
   };
-  function getWeekdayName(date) {
-    const weekMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    return weekMap[new Date(date).getDay()];
-  }
 
-  function getCurrentWeekRange() {
-    const today = normalize(new Date());
+  const processCompleted = (tasks) => {
+    for (const task of tasks) {
+      const diff = getDiffDays(task.updatedAt);
 
-    const day = today.getDay();
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diffToMonday);
-
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-
-    return { monday, sunday };
-  }
-  function isInThisWeek(dateToCheck) {
-    const { monday, sunday } = getCurrentWeekRange();
-    const d = normalize(dateToCheck);
-    return d >= monday && d <= sunday;
-  }
-  const getTaskCardData = (allTasks) =>
-    allTasks
-      .filter((task, idx) => task.type === "personal")
-      .forEach((task, idx) => {
-        let dbDate = normalize(task.dueDate);
-        let today = normalize(new Date());
-        let diffDays = (dbDate - today) / (1000 * 60 * 60 * 24);
-        if (diffDays === 0) {
-          taskCardData.dueToday++;
-          if (task.completed) {
-            taskCardData.todayCompleted++;
-          } else {
-            taskCardData.todayPending++;
-          }
-        }
-        if (diffDays < 0) {
-          taskCardData.overDue++;
-        }
-      });
-  const getProjectCardData = (allProjects) =>
-    allProjects.forEach((project, idx) => {
-      let dbDate = normalize(project.dueDate);
-      let today = normalize(new Date());
-      let diffDays = (dbDate - today) / (1000 * 60 * 60 * 24);
-      if (diffDays === 0) {
-        projectCardData.dueToday++;
+      if ((task.completed && diff === 0) || (diff < 0 && diff > -4)) {
+        completedData.push({
+          name: task.title,
+          type: task.type,
+          date: new Date(task.updatedAt).toLocaleDateString("en-GB"),
+        });
       }
-      if (diffDays < 0) {
-        projectCardData.overDue++;
-      }
-      projectCardData.totalProjects++;
-    });
-  const getBarChartData = (allTasks) => {
-    allTasks.forEach((task) => {
-      let dbDate = normalize(task.dueDate);
-      let today = normalize(new Date());
-      let diffDays = (dbDate - today) / (1000 * 60 * 60 * 24);
-      if (task.completed) {
-        barChartData.completed++;
-      } else {
-        if (!task.completed) {
-          barChartData.pending++;
-        }
-        if (diffDays < 0 && !task.completed) {
-          barChartData.overDue++;
-        }
-      }
-    });
+    }
   };
-  const getLineChartData = (allTasks) => {
-    allTasks.forEach((task) => {
-      if (isInThisWeek(task.updatedAt) && task.completed) {
-        const dayName = getWeekdayName(task.updatedAt);
-        lineChartData[dayName]++;
-      }
-    });
-  };
+
+  // -------------------------
+  // Main Execution
+  // -------------------------
 
   try {
-    const allTasks = await tasksModel.find({ createdBy: userId });
-    getBarChartData(allTasks);
-    getLineChartData(allTasks);
-    getTaskCardData(allTasks);
-    getTodaysFocusData(allTasks);
-    getUpcomingData(allTasks);
-    console.log(upcomingData);
+    const [allTasks, allProjects] = await Promise.all([
+      tasksModel.find({ createdBy: userId }),
+      projectModel.find({ createdBy: userId }),
+    ]);
 
-    try {
-      const allProjects = await projectModel.find({ createdBy: userId });
-      getProjectCardData(allProjects);
-    } catch (err) {
-      res
-        .status(500)
-        .json({ reply: "Internal Server Error in Projects", success: false });
-    }
-    res.status(200).json(allTasks);
+    // Process all dashboard sections
+    processBarChart(allTasks);
+    processLineChart(allTasks);
+    processTaskCards(allTasks);
+    processTodayFocus(allTasks);
+    processUpcoming(allTasks);
+    processCompleted(allTasks);
+
+    processProjectCards(allProjects);
+
+    // Final Response
+    res.status(200).json({
+      success: true,
+      reply: "Fetched Dashboard Data",
+      dashboardData: {
+        taskCardData,
+        projectCardData,
+        barChartData,
+        lineChartData,
+        todaysFocusData,
+        upcomingData,
+        completedData,
+      },
+    });
   } catch (err) {
-    res.status(500).json({ reply: "Internal Server Error", success: false });
+    console.error("Dashboard Error:", err);
+    res.status(500).json({
+      success: false,
+      reply: "Internal Server Error",
+    });
   }
 };
