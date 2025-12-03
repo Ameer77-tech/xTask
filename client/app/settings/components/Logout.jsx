@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 
 const Logout = () => {
   const router = useRouter();
+  const apiurl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/logout-user`;
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const apiurl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/logout-user`;
   const handleLogout = async () => {
     setLoading(true);
     try {
