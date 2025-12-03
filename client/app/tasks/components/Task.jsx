@@ -102,7 +102,7 @@ const Task = ({
             <button
               onClick={() => onPause(id)}
               className={clsx(
-                "hover:text-white text-muted-foreground transition-all ease",
+                "dark:hover:text-white hover:text-black text-muted-foreground transition-all ease",
                 filter === "completed" && "pointer-events-none opacity-30"
               )}
             >
@@ -112,7 +112,7 @@ const Task = ({
             <button
               onClick={() => onPlay(id)}
               className={clsx(
-                "hover:text-white text-muted-foreground transition-all ease",
+                "dark:hover:text-white hover:text-black text-muted-foreground transition-all ease",
                 filter === "completed" && "pointer-events-none opacity-30"
               )}
             >
@@ -123,7 +123,7 @@ const Task = ({
           <button
             onClick={() => onReset(id)}
             className={clsx(
-              "hover:text-white text-muted-foreground transition-all ease",
+              "dark:hover:text-white text-muted-foreground hover:text-black transition-all ease",
               filter === "completed" && "pointer-events-none opacity-30"
             )}
           >
@@ -153,7 +153,7 @@ const Task = ({
           </button>
           <button
             className={clsx(
-              "hover:text-accent transition-all ease",
+              "hover:text-chart-1 transition-all ease",
               filter === "completed" &&
                 "pointer-events-none text-muted-foreground opacity-25"
             )}

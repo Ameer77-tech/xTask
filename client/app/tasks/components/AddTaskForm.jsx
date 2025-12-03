@@ -181,7 +181,7 @@ const AddTaskForm = ({
         isSuccess: false,
       });
     } finally {
-      setIsOpen(false);
+     
       setTaskDetails(buildFormState(initialTaskDetails));
       setisPending(false);
       setActionClicked(false);

@@ -4,6 +4,7 @@ import TasksSection from "./components/TasksSection";
 import Loading from "@/components/Loading";
 import { cookies } from "next/headers";
 import UserInitializer from "../initializers/user.initializer";
+import ThemeSetter from "@/components/ThemeSetter";
 
 const page = async ({ params, searchParams }) => {
   const parametre = await searchParams;
@@ -48,6 +49,7 @@ const page = async ({ params, searchParams }) => {
   const data = await getUserData();
   return (
     <>
+      <ThemeSetter />
       <div className="h-screen w-screen flex justify-start">
         <UserInitializer userData={data} />
         <AppSideBar />

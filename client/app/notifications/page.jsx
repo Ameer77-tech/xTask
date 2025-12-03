@@ -3,6 +3,7 @@ import NoNotifications from "./components/NoNotifications";
 import AppSideBar from "@/components/SideBar";
 import { cookies } from "next/headers";
 import UserInitializer from "../initializers/user.initializer";
+import ThemeSetter from "@/components/ThemeSetter";
 
 const page = async () => {
   const cookieStore = await cookies();
@@ -45,6 +46,7 @@ const page = async () => {
   const userData = await getUserData();
   return (
     <div className="h-screen w-screen flex justify-start">
+      <ThemeSetter />
       <UserInitializer userData={userData}></UserInitializer>
       <AppSideBar />
       <NoNotifications />

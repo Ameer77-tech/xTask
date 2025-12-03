@@ -10,18 +10,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Pencil } from "lucide-react";
 
-const getUserData = async () => {
-  return {
-    displayName: "Ameer Shaik",
-    username: "ameershaik",
-    email: "",
-    avatar: "/avatar.png",
-  };
-};
-
-const Account = async () => {
-  const user = await getUserData();
-
+const Account = ({ user }) => {
   return (
     <section className="lg:w-full lg:px-6 py-8 flex justify-center">
       <Card className="w-full max-w-6xl bg-secondary/40 border border-border/50 shadow-sm">
@@ -52,7 +41,9 @@ const Account = async () => {
               <p className="text-base font-medium text-foreground">
                 {user.displayName}
               </p>
-              <p className="text-sm text-muted-foreground">@{user.username}</p>
+              <p className="text-sm text-muted-foreground">
+                @{user.email || user.userName}
+              </p>
             </div>
           </div>
 
@@ -74,7 +65,7 @@ const Account = async () => {
               Username
             </label>
             <Input
-              value={user.username}
+              value={user.userName || user.email}
               disabled
               className="bg-background opacity-80"
             />
@@ -87,7 +78,7 @@ const Account = async () => {
                 Email
               </label>
               <Input
-                value={user.email}
+                value={user.email.includes("@") ? user.email : "-"}
                 disabled
                 className="bg-background opacity-80"
               />
@@ -103,12 +94,6 @@ const Account = async () => {
             </div>
           )}
         </CardContent>
-
-        <CardFooter className="pt-4 border-t mt-5 border-border/50 px-6 sm:px-10">
-          <Button className="ml-auto bg-primary text-primary-foreground hover:bg-primary/90">
-            Save Changes
-          </Button>
-        </CardFooter>
       </Card>
     </section>
   );

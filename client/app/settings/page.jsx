@@ -47,7 +47,7 @@ const page = async () => {
       <UserInitializer userData={userData}></UserInitializer>
       <div className="h-screen w-screen flex justify-start">
         <AppSideBar />
-        <Main />
+        <Main userData={userData.reply} />
       </div>
     </>
   );

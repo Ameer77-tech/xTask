@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import UserInitaializer from "./initializers/user.initializer";
 import Loading from "@/components/Loading";
+import ThemeSetter from "@/components/ThemeSetter";
 const page = async () => {
   const cookieStore = await cookies();
 
@@ -67,9 +68,10 @@ const page = async () => {
 
   return (
     <div className="h-screen w-screen flex justify-start">
+      <ThemeSetter />
       <UserInitaializer userData={userData} />
       <AppSideBar />
-      <Dashboard data={DashboardData} />
+      <Dashboard data={DashboardData} name={userData.reply.displayName} />
     </div>
   );
 };

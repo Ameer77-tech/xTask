@@ -44,7 +44,7 @@ const TaskCard = ({
   return (
     <Card
       className={clsx(
-        "bg-[#111] border-gray-800 rounded-2xl shadow-md relative transition-all ease duration-300",
+        "dark:bg-[#111] border-gray-800 rounded-none shadow-md relative transition-all ease duration-300",
         runningTask === ""
           ? ""
           : runningTask === task._id
@@ -54,11 +54,11 @@ const TaskCard = ({
     >
       {task.completed && (
         <div
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center
-               bg-black/50 backdrop-blur-[1px] text-primary"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded
+               bg-black/50 backdrop-blur-[1px] dark:text-primary"
         >
           <div
-            className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-2xl 
+            className="flex items-center gap-2 bg-white/10 px-4 py-2 
                  shadow-xl border border-white/20 font-semibold text-sm"
           >
             <CheckCheck className="w-4 h-4" />
@@ -68,7 +68,7 @@ const TaskCard = ({
       )}
       <CardHeader className="flex justify-between items-start">
         <div>
-          <CardTitle className="text-lg font-semibold text-white">
+          <CardTitle className="text-lg font-semibold dark:text-white">
             {task.title}
           </CardTitle>
           <p className="text-sm text-gray-400">{task.description}</p>
@@ -85,7 +85,7 @@ const TaskCard = ({
             }}
             size="icon"
             variant={"default"}
-            className={"bg-accent hover:bg-accent/80"}
+            className={"dark:bg-accent dark:hover:bg-accent/80"}
           >
             <Edit className="w-4 h-4 hover:text-blue-600" />
           </Button>
@@ -131,7 +131,7 @@ const TaskCard = ({
         </Badge>
 
         <div className="flex justify-between items-center pt-3 border-t border-gray-800">
-          <div className="text-gray-300 font-mono">
+          <div className="dark:text-gray-300 font-mono">
             {formatTime(task.timer)}
           </div>
           <div className="flex gap-5">

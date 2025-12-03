@@ -4,6 +4,7 @@ import Main from "./components/Main";
 import { cookies, cookieStore } from "next/headers";
 import { redirect } from "next/navigation";
 import TasksInitializer from "@/app/initializers/tasks.initializer";
+import ThemeSetter from "@/components/ThemeSetter";
 
 const page = async ({ params }) => {
   const cookieStore = await cookies();
@@ -37,6 +38,7 @@ const page = async ({ params }) => {
 
   return (
     <>
+       <ThemeSetter />
       <TasksInitializer taskData={data["payload"].tasks} />
       <div className="h-screen w-screen flex justify-start">
         <AppSideBar />

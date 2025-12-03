@@ -24,7 +24,7 @@ const DashboardCard = ({ title, count, description, trend }) => {
               ? "text-destructive"
               : title.toLowerCase() === "over due"
               ? "text-muted-foreground"
-              : "text-accent"
+              : "dark:text-accent"
           )}
         >
           {count}

@@ -4,7 +4,7 @@ import Cards from "./Cards";
 import Charts from "./Charts";
 import MainContent from "./MainContent";
 
-const Dashboard = ({ data }) => {
+const Dashboard = ({ data, name }) => {
   const cardsData = {
     taskCardsData: data.dashboardData.taskCardData,
     projectCardData: data.dashboardData.projectCardData,
@@ -21,7 +21,7 @@ const Dashboard = ({ data }) => {
 
   return (
     <div className="w-full">
-      <Header />
+      <Header name={name} />
       <Cards data={cardsData} />
       <Charts data={chartsData} />
       <MainContent data={mainContentData} />

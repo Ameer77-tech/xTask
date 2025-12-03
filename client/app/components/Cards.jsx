@@ -34,7 +34,7 @@ const Cards = ({ data }) => {
           description="Tasks not yet started"
         />
       </div>
-      <h1 className="text-center text-2xl font-bold tracking-wide text-accent">
+      <h1 className="text-center text-2xl font-bold tracking-wide dark:text-accent">
         Projects Status
       </h1>
       <div className="p-5 lg:grid-cols-4 gap-5 md:grid-cols-3 grid-cols-1 grid place-items-center">

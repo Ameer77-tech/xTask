@@ -27,48 +27,12 @@ const Privacy = async () => {
         </CardHeader>
 
         <CardContent className="space-y-10 px-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-lg font-medium text-foreground">
-                Local Backup
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Automatically create local backups of your data.
-              </p>
-            </div>
-            <Switch defaultChecked={settings.localBackup} />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-lg font-medium text-foreground">
-                Auto-Clear Activity Logs
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Automatically clear your activity logs after 30 days.
-              </p>
-            </div>
-            <Switch defaultChecked={settings.autoClearLogs} />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-lg font-medium text-foreground">
-                Usage Analytics
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Share anonymous usage data to help improve the app.
-              </p>
-            </div>
-            <Switch defaultChecked={settings.analyticsAllowed} />
-          </div>
-
           <div className="pt-6 border-t border-border/50">
             <p className="text-lg font-medium text-foreground mb-3">
               Export Your Data
             </p>
             <p className="text-sm text-muted-foreground mb-6">
-              Download all your tasks, projects, and preferences as a local
+              Download all your tasks and projects as a local
               backup file.
             </p>
             <Button variant="outline" className="px-6">
@@ -84,15 +48,16 @@ const Privacy = async () => {
               Permanently delete your data from this device. This action cannot
               be undone.
             </p>
-            <Button variant="destructive" className="px-6">
-              Delete Account
-            </Button>
+            <div className="flex gap-5">
+              <Button variant="destructive" className="px-6">
+                Delete Account
+              </Button>
+              <Button variant="outline" className="px-6 border-destructive hover:bg-destructive hover:text-white">
+                Logout
+              </Button>
+            </div>
           </div>
         </CardContent>
-
-        <CardFooter className="flex justify-end pt-8">
-          <Button className="px-6 text-base">Save Changes</Button>
-        </CardFooter>
       </Card>
     </section>
   );

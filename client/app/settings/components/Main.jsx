@@ -5,14 +5,14 @@ import AppPreferences from "./AppPreferences"
 import Notifications from "./Notifications"
 import Privacy from "./Privacy"
 
-const Main = () => {
+const Main = ({ userData }) => {
     return (
         <>
             <div className="lg:p-10 h-screen flex flex-col w-full">
-                <Account />
-                <AppPreferences />
+                <Account user={userData}/>
+                {/* <AppPreferences /> */}
                 <Appearance />
-                <Notifications />
+                {/* <Notifications /> */}
                 <Privacy />
                 <About />
             </div>
