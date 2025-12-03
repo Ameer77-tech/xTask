@@ -278,7 +278,7 @@ export const exportData = async (req, res) => {
     const [tasks, projects] = await Promise.all([
       tasksModel
         .find({ createdBy: userId })
-        .select("-_id -__v -createdBy -linkedProject -updatedAt")
+        .select("-_id -__v -createdBy -linkedProject -updatedAt -createdAt")
         .lean(),
       projectsModel
         .find({ createdBy: userId })

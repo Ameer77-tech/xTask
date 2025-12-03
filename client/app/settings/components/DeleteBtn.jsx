@@ -22,6 +22,7 @@ const DeleteBtn = () => {
       });
       const res = await response.json();
       if (res.success) {
+        localStorage.clear();
         router.replace("login");
       } else {
         alert(res.reply);
