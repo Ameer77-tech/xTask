@@ -47,7 +47,7 @@ const About = async () => {
 
           <div className="flex justify-center gap-6 pt-2">
             <Link
-              href={app.github}
+              href={"https://github.com/Ameer77-tech"}
               target="_blank"
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
             >
@@ -55,7 +55,7 @@ const About = async () => {
               <span className="text-sm font-medium">GitHub</span>
             </Link>
             <Link
-              href={app.linkedin}
+              href={"https://www.linkedin.com/in/ameer-shaik-55b106364/"}
               target="_blank"
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
             >

@@ -7,15 +7,13 @@ const UserInitializer = ({ userData }) => {
 
   useEffect(() => {
     console.log(localStorage.getItem("user-store"));
-    
-    if (localStorage.getItem("user-store") === undefined || localStorage.getItem("user-store") === null) {
-      setData({
-        userName: userData.reply.userName,
-        email: userData.reply.email || "",
-        displayName: userData.reply.displayName || "",
-        avatar: userData.reply.avatar,
-      });
-    }
+
+    setData({
+      userName: userData.reply.userName,
+      email: userData.reply.email || "",
+      displayName: userData.reply.displayName || "",
+      avatar: userData.reply.avatar,
+    });
   }, []);
 
   return null;

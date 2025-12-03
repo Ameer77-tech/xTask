@@ -6,6 +6,7 @@ import ProjectInitializer from "../initializers/project.initializer";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import UserInitializer from "../initializers/user.initializer";
+import ThemeSetter from "@/components/ThemeSetter";
 
 const page = async ({ params, searchParams }) => {
   const urlData = await searchParams;
@@ -20,7 +21,7 @@ const page = async ({ params, searchParams }) => {
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
-    
+
   const getUserData = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-user`,
@@ -65,6 +66,7 @@ const page = async ({ params, searchParams }) => {
 
   return (
     <>
+      <ThemeSetter />
       <ProjectInitializer data={projects} />
       <UserInitializer userData={userData} />
       <div className="h-screen w-screen flex justify-start">

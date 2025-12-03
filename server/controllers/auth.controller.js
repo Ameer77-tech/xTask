@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/jwt.js";
 import userModel from "../models/user.model.js";
+import tasksModel from "../models/task.model.js";
+import projectsModel from "../models/project.model.js";
 
 export const registerUser = async (req, res) => {
   const data = req.body;
@@ -132,5 +134,28 @@ export const logOutUser = (req, res) => {
     return res
       .status(500)
       .json({ reply: "Server error", success: false, error: err.message });
+  }
+};
+
+export const deleteAccount = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    await Promise.all([
+      userModel.deleteOne({ _id: userId }),
+      tasksModel.deleteMany({ createdBy: userId }),
+      projectsModel.deleteMany({ createdBy: userId }),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      reply: "Account deleted successfully",
+    });
+  } catch (err) {
+    console.error("Delete Account Error:", err);
+    return res.status(500).json({
+      success: false,
+      reply: "Internal Server Error",
+    });
   }
 };

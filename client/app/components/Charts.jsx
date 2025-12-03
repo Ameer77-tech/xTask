@@ -28,7 +28,6 @@ const Charts = ({ data }) => {
     day,
     completed,
   }));
-  console.log(lineData);
 
   return (
     <div className="p-5 grid lg:grid-cols-2 grid-cols-1 gap-6">
@@ -43,14 +42,14 @@ const Charts = ({ data }) => {
                 color: "black",
               }}
               labelStyle={{
-                color: "var(--accent)",
+                color: "var(--primary)",
               }}
               formatter={(value) => `${value} tasks`}
             />
             <Legend verticalAlign="bottom" height={36} />
             <Bar
               dataKey="value"
-              fill="var(--accent)"
+              fill="var(--chart-1)"
               radius={[8, 8, 0, 0]}
               style={{ transition: "all 0.3s ease-in-out" }}
             />

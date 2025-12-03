@@ -47,7 +47,7 @@ const ViewToggle = ({ view }) => {
             width: width,
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="bg-accent top-1/2 -translate-y-1/2 left-0 rounded-xl absolute h-3/4 z-0"
+          className="dark:bg-accent bg-chart-1 top-1/2 -translate-y-1/2 left-0 rounded-xl absolute h-full z-0"
         ></motion.div>
 
         <div

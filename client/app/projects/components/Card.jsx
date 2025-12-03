@@ -110,7 +110,7 @@ const ProjectCard = ({
                   setaction("edit");
                   setActionClicked(true);
                 }}
-                className={"hover:bg-accent/30! hover:text-white!"}
+                className={"dark:hover:bg-accent/30! dark:hover:text-white!"}
               >
                 <PenBox /> Edit
               </DropdownMenuItem>
