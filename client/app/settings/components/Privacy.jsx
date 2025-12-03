@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import DeleteBtn from "./DeleteBtn";
 import Logout from "./Logout";
+import Export from "./Export";
 
 const Privacy = () => {
   return (
@@ -26,9 +27,7 @@ const Privacy = () => {
             <p className="text-sm text-muted-foreground mb-6">
               Download all your tasks and projects as a local backup file.
             </p>
-            <Button variant="outline" className="px-6">
-              Export Data
-            </Button>
+           <Export />
           </div>
 
           <div className="pt-6 border-t border-border/50">

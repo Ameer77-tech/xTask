@@ -1,6 +1,6 @@
 import userModel from "../models/user.model.js";
 import tasksModel from "../models/task.model.js";
-import projectModel from "../models/project.model.js";
+import projectsModel from "../models/project.model.js";
 
 export const getUserData = async (req, res) => {
   const id = req.user.id;
@@ -236,7 +236,7 @@ export const getDashboardData = async (req, res) => {
   try {
     const [allTasks, allProjects] = await Promise.all([
       tasksModel.find({ createdBy: userId }),
-      projectModel.find({ createdBy: userId }),
+      projectsModel.find({ createdBy: userId }),
     ]);
 
     // Process all dashboard sections
@@ -269,5 +269,27 @@ export const getDashboardData = async (req, res) => {
       success: false,
       reply: "Internal Server Error",
     });
+  }
+};
+
+export const exportData = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const [tasks, projects] = await Promise.all([
+      tasksModel
+        .find({ createdBy: userId })
+        .select("-_id -__v -createdBy -linkedProject -updatedAt")
+        .lean(),
+      projectsModel
+        .find({ createdBy: userId })
+        .select("-_id -__v -createdBy")
+        .lean(),
+      ,
+    ]);
+    res
+      .status(200)
+      .json({ reply: "Fetched", success: true, data: { tasks, projects } });
+  } catch (err) {
+    res.status(500).json({ reply: "Internal Server Error", success: false });
   }
 };
