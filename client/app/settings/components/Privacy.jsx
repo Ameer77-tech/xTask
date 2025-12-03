@@ -7,18 +7,10 @@ import {
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import DeleteBtn from "./DeleteBtn";
+import Logout from "./Logout";
 
-const getPrivacySettings = async () => {
-  return {
-    localBackup: true,
-    autoClearLogs: false,
-    analyticsAllowed: false,
-  };
-};
-
-const Privacy = async () => {
-  const settings = await getPrivacySettings();
-
+const Privacy = () => {
   return (
     <section className="w-full px-8 py-10 flex justify-center">
       <Card className="w-full max-w-6xl bg-secondary/40 border border-border/50 shadow-sm">
@@ -32,8 +24,7 @@ const Privacy = async () => {
               Export Your Data
             </p>
             <p className="text-sm text-muted-foreground mb-6">
-              Download all your tasks and projects as a local
-              backup file.
+              Download all your tasks and projects as a local backup file.
             </p>
             <Button variant="outline" className="px-6">
               Export Data
@@ -49,12 +40,8 @@ const Privacy = async () => {
               be undone.
             </p>
             <div className="flex gap-5">
-              <Button variant="destructive" className="px-6">
-                Delete Account
-              </Button>
-              <Button variant="outline" className="px-6 border-destructive hover:bg-destructive hover:text-white">
-                Logout
-              </Button>
+              <DeleteBtn />
+              <Logout />
             </div>
           </div>
         </CardContent>

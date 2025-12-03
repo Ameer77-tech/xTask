@@ -4,6 +4,7 @@ import AppSideBar from "@/components/SideBar";
 import { cookies } from "next/headers";
 import UserInitializer from "../initializers/user.initializer";
 import ThemeSetter from "@/components/ThemeSetter";
+import { redirect } from "next/navigation";
 
 const page = async () => {
   const cookieStore = await cookies();

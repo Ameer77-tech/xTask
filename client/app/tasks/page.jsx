@@ -5,6 +5,7 @@ import Loading from "@/components/Loading";
 import { cookies } from "next/headers";
 import UserInitializer from "../initializers/user.initializer";
 import ThemeSetter from "@/components/ThemeSetter";
+import { redirect } from "next/navigation";
 
 const page = async ({ params, searchParams }) => {
   const parametre = await searchParams;
