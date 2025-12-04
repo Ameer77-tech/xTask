@@ -49,6 +49,5 @@ export const metadata = {
   },
   icons: {
     icon: "/logo.png",
-    apple: "/apple-touch-icon.png",
-  },
+    },
 };

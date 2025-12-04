@@ -15,8 +15,8 @@ googleAuthRouter.get(
     const { token } = req.user;
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     res.redirect(`${process.env.CLIENT_URL}/`);
   }
