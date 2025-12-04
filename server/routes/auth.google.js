@@ -18,7 +18,6 @@ googleAuthRouter.get(
       secure: true,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
-       domain: "x-task-rho.vercel.app"
     });
     res.redirect(`${process.env.CLIENT_URL}/`);
   }
