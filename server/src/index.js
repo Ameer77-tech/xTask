@@ -12,6 +12,8 @@ import githubAuthRouter from "../routes/auth.github.js";
 import authRouter from "../routes/auth.js";
 import taskRouter from "../routes/task.js";
 import projectRouter from "../routes/project.js";
+import helmet from "helmet";
+import ratelimiter from "../middlewares/ratelimiter.js";
 
 await connectDB();
 
@@ -19,15 +21,21 @@ const app = express();
 const PORT = process.env.PORT;
 const frontend = process.env.CLIENT_URL;
 
+// middlewares
 app.use(cookieParser());
+app.use(express.json());
 app.use(
   cors({
-    origin: [frontend, "http://192.168.0.5:3000"],
+    origin: [frontend, "http://192.168.0.5:3000", "http://localhost:3000"],
     credentials: true,
   })
 );
+app.use(helmet());
+
+app.use(ratelimiter);
+// middlewares
+
 app.use(passport.initialize());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth/google", googleAuthRouter);

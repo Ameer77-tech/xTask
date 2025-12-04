@@ -51,7 +51,7 @@ const Filter = () => {
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="text-secondary-foreground border-0 p-2 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="text-secondary-foreground border-0 p-2 dark:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
           placeholder="Search for projects by title or description"
         />
       </div>

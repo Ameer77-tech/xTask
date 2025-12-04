@@ -34,7 +34,7 @@ export default function Filter({ filter, currentView }) {
         <Input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="text-secondary-foreground border-0 p-2"
+          className="text-secondary-foreground dark:bg-secondary border-0 p-2"
           placeholder="Search for tasks by title or description"
         />
       </div>
