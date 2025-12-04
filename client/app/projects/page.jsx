@@ -29,9 +29,8 @@ const page = async ({ params, searchParams }) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieHeader,
         },
-
+        credentials: "include",
         cache: "no-store",
       }
     );
@@ -56,8 +55,8 @@ const page = async ({ params, searchParams }) => {
       method: "GET",
       headers: {
         "content-type": "application/json",
-        Cookie: cookieHeader,
       },
+      credentials: "include",
       cache: "no-store",
     }
   );

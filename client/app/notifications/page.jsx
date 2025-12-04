@@ -26,9 +26,8 @@ const page = async () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieHeader,
         },
-
+        credentials: "include",
         cache: "no-store",
       }
     );

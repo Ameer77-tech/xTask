@@ -10,6 +10,8 @@ const page = async () => {
   const cookieStore = await cookies();
 
   const token = cookieStore.get("token")?.value;
+  console.log(token);
+
   if (!token) {
     redirect("/login");
   }
@@ -25,9 +27,8 @@ const page = async () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieHeader,
         },
-
+        credentials: "include",
         cache: "no-store",
       }
     );
@@ -51,7 +52,6 @@ const page = async () => {
           method: "GET",
           headers: {
             "content-type": "application/json",
-            Cookie: cookieHeader,
           },
           credentials: "include",
         }
