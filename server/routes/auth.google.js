@@ -17,6 +17,7 @@ googleAuthRouter.get(
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      maxAge: 60 * 60 * 24 * 7,
     });
     res.redirect(`${process.env.CLIENT_URL}/`);
   }

@@ -45,6 +45,7 @@ export const registerUser = async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
+            maxAge: 60 * 60 * 24 * 7,
           });
           return res
             .status(200)
@@ -105,6 +106,7 @@ export const verifyUser = async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
+            maxAge: 60 * 60 * 24 * 7,
           });
           return res
             .status(200)
@@ -125,6 +127,7 @@ export const logOutUser = (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return res
