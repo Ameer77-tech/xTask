@@ -13,7 +13,6 @@ const page = async () => {
   if (!token) {
     redirect("/login");
   }
-
   const cookieHeader = cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
