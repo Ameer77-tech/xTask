@@ -30,6 +30,15 @@ app.use(
     credentials: true,
   })
 );
+
+app.options(
+  "*",
+  cors({
+    origin: [frontend],
+    credentials: true,
+  })
+);
+
 app.use(helmet());
 
 app.use(ratelimiter);
