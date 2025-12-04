@@ -32,7 +32,7 @@ app.use(
 );
 
 app.options(
-  "*",
+  /.*/,
   cors({
     origin: [frontend],
     credentials: true,
