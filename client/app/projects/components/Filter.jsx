@@ -32,7 +32,7 @@ export default function Filter({ filter }) {
         <Search color="#93959a" />
         <Input
           onChange={(e) => setsearchTerm(e.target.value)}
-          className="text-secondary-foreground border-0 p-2"
+          className="text-secondary-foreground dark:bg-secondary border-0 p-2"
           placeholder="Search for projects by title or description"
         />
       </div>
