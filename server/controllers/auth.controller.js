@@ -46,6 +46,7 @@ export const registerUser = async (req, res) => {
             secure: true,
             sameSite: "none",
             maxAge: 60 * 60 * 24 * 7,
+             domain: "x-task-rho.vercel.app"
           });
           return res
             .status(200)
@@ -107,6 +108,7 @@ export const verifyUser = async (req, res) => {
             secure: true,
             sameSite: "none",
             maxAge: 60 * 60 * 24 * 7,
+             domain: "x-task-rho.vercel.app"
           });
           return res
             .status(200)
@@ -128,6 +130,7 @@ export const logOutUser = (req, res) => {
       secure: true,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
+       domain: "x-task-rho.vercel.app"
     });
 
     return res
