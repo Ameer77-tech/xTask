@@ -43,8 +43,8 @@ export const registerUser = async (req, res) => {
           const token = generateToken(created._id);
           res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
           });
           return res
             .status(200)
@@ -103,8 +103,8 @@ export const verifyUser = async (req, res) => {
           ``;
           res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
           });
           return res
             .status(200)
@@ -124,7 +124,7 @@ export const logOutUser = (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
     return res
