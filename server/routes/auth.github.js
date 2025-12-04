@@ -18,7 +18,7 @@ githubAuthRouter.get(
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
-    res.redirect("http://192.168.0.5:3000/");
+    res.redirect(`${process.env.CLIENT_URL}/`);
   }
 );
 
