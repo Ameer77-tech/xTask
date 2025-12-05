@@ -16,7 +16,7 @@ import Toast from "@/components/Toast";
 import useTaskStore from "@/app/Store/task.store";
 import { Spinner } from "@/components/ui/spinner";
 
-const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
+const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/task`;
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
   try {
@@ -65,8 +65,6 @@ const Form = ({
     )
   );
 
-  console.log(taskDetails);
-
   useEffect(() => {
     setTaskDetails(buildFormState(initialTaskDetails));
   }, [initialTaskDetails, editingTask]);
@@ -98,7 +96,7 @@ const Form = ({
     };
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/add-task`, {
+      const response = await fetch(`${apiUrl}/add`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "include",
@@ -150,7 +148,7 @@ const Form = ({
     const payload = { ...taskDetails, priority: Number(taskDetails.priority) };
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${editingTask}`, {
+      const response = await fetch(`${apiUrl}/update/${editingTask}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         credentials: "include",

@@ -8,17 +8,18 @@ import Toast from "@/components/Toast";
 import Form from "./Form";
 import { usePathname } from "next/navigation";
 
-const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
+const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/task`;
 
 const AllTasks = ({ projectId }) => {
   const pathName = usePathname();
   const visibleTasks = useTaskStore((state) => state.visibleTasks);
   const allTasks = useMemo(
     () =>
-      visibleTasks.filter((t) => t.type === "project" && t.linkedProject == projectId),
+      visibleTasks.filter(
+        (t) => t.type === "project" && t.linkedProject == projectId
+      ),
     [visibleTasks]
   );
-  console.log(allTasks);
 
   const removeTask = useTaskStore((state) => state.removeTask);
   const updateTask = useTaskStore((state) => state.updateTask);
@@ -51,7 +52,7 @@ const AllTasks = ({ projectId }) => {
     }
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/delete-task/${id}`, {
+      const response = await fetch(`${apiUrl}/remove/${id}`, {
         method: "DELETE",
         headers: {
           "content-type": "application/json",
@@ -149,8 +150,8 @@ const AllTasks = ({ projectId }) => {
   };
 
   const onPause = async (id) => {
-    await saveTimerToDB(id);
     setrunningTask("");
+    await saveTimerToDB(id);
   };
   const onReset = async (id) => {
     updateTask(id, { timer: 0 });
@@ -206,7 +207,7 @@ const AllTasks = ({ projectId }) => {
 
   const updateTimerInDb = async (id, data) => {
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${id}`, {
+      const response = await fetch(`${apiUrl}/update/${id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         credentials: "include",

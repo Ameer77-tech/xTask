@@ -1,48 +1,47 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req, { params }) {
-  const { id } = params;
+export async function DELETE(req) {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get("token");
 
     if (!token) {
       return NextResponse.json(
-        { success: false, reply: "Authentication token missing" },
+        { success: false, reply: "No token found" },
         { status: 401 }
       );
     }
 
     const backendRes = await fetch(
-      `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks/delete-task/${id}`,
+      `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/delete-account`,
       {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          // Forward the cookie correctly
           Cookie: `${token.name}=${token.value}`,
         },
         credentials: "include",
       }
     );
 
-    const data = await backendRes.json();
+    const resData = await backendRes.json();
 
-    if (!backendRes.ok || !data.success) {
+    if (!resData.success) {
       return NextResponse.json(
-        { success: false, reply: data.reply },
-        { status: backendRes.status }
+        { success: false, reply: resData.reply },
+        { status: backendRes.status || 500 }
       );
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        reply: data.reply,
-        deleted: data.deleted,
-      },
-      { status: 200 }
-    );
+    // Optionally delete the cookie on the frontend domain
+    cookieStore.set("token", "", {
+      maxAge: 0,
+      path: "/",
+    });
+
+    return NextResponse.json({ success: true, message: "Account Deleted" });
   } catch (err) {
     console.error(err);
     return NextResponse.json(

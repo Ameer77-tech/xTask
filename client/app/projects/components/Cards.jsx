@@ -31,7 +31,7 @@ const Cards = () => {
     isSuccess: false,
   });
   const [initialDetails, setInitialDetails] = useState({});
-  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/projects`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/project`;
 
   const onDelete = async (id) => {
     setisPending(true);
@@ -39,7 +39,7 @@ const Cards = () => {
       return;
     }
     try {
-      const res = await fetch(`${apiUrl}/delete-project/${projectData.id}`, {
+      const res = await fetch(`${apiUrl}/remove/${projectData.id}`, {
         method: "DELETE",
         headers: {
           "content-type": "application/json",
@@ -55,7 +55,6 @@ const Cards = () => {
         });
         setShowToast(true);
       } else {
-        console.log(response.id);
         deleteProject(response.id);
         settoastData({
           message: response.reply,
@@ -85,7 +84,7 @@ const Cards = () => {
       return;
     }
     try {
-      const res = await fetch(`${apiUrl}/edit-project/${projectData.id}`, {
+      const res = await fetch(`${apiUrl}/update/${projectData.id}`, {
         method: "PATCH",
         headers: {
           "content-type": "application/json",

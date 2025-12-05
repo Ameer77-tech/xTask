@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 const DeleteBtn = () => {
   const router = useRouter();
-  const apiurl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/delete-account`;
+  const apiurl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/deleteacc`;
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 

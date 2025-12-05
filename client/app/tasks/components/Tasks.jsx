@@ -70,11 +70,11 @@ const Tasks = ({ view, filter }) => {
     });
   }, [editingTask]);
 
-  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/task`;
   const onDelete = async () => {
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/delete-task/${taskData.id}`, {
+      const response = await fetch(`${apiUrl}/remove/${taskData.id}`, {
         method: "DELETE",
         header: {
           "content-type": "application/json",
@@ -82,7 +82,6 @@ const Tasks = ({ view, filter }) => {
         credentials: "include",
       });
       const data = await response.json();
-      console.log(data);
 
       if (!data.success) {
         settoastData({
@@ -128,7 +127,7 @@ const Tasks = ({ view, filter }) => {
   const onMark = async () => {
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${taskData.id}`, {
+      const response = await fetch(`${apiUrl}/update/${taskData.id}`, {
         method: "PATCH",
         headers: {
           "content-type": "application/json",
@@ -188,9 +187,8 @@ const Tasks = ({ view, filter }) => {
   };
 
   const onPause = async (id) => {
-    await saveTimerToDB(id);
-
     setrunningTask("");
+    await saveTimerToDB(id);
   };
   const onReset = async (id) => {
     editTask(id, { timer: 0 });
@@ -247,7 +245,7 @@ const Tasks = ({ view, filter }) => {
 
   const updateTimerInDb = async (id, data) => {
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${id}`, {
+      const response = await fetch(`${apiUrl}/update/${id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         credentials: "include",

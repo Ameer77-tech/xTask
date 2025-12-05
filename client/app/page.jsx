@@ -9,7 +9,11 @@ import ThemeSetter from "@/components/ThemeSetter";
 const page = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  
+
+  if (!token) {
+    redirect("/login");
+  }
+
   const cookieHeader = cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
@@ -30,13 +34,11 @@ const page = async () => {
     );
 
     let data = await res.json();
-    console.log(data);
 
     if (data.reply === "Unauthorized") {
       redirect("/login");
     } else if (!data.success) {
-      alert(data.reply);
-      return;
+      return data.reply;
     } else {
       return data;
     }
