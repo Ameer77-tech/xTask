@@ -42,7 +42,7 @@ export const registerUser = async (req, res) => {
           const created = await userModel.create(user);
           const token = generateToken(created._id);
           res.cookie("token", token, {
-            httpOnly: false,
+            httpOnly: true,
             secure: true,
             sameSite: "none",
             maxAge: 60 * 60 * 24 * 7,
@@ -103,7 +103,7 @@ export const verifyUser = async (req, res) => {
           const token = generateToken(user._id);
           ``;
           res.cookie("token", token, {
-            httpOnly: false,
+            httpOnly: true,
             secure: true,
             sameSite: "none",
             maxAge: 60 * 60 * 24 * 7,
