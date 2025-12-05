@@ -16,7 +16,7 @@ import Toast from "@/components/Toast";
 import useTaskStore from "@/app/Store/task.store";
 import { Spinner } from "@/components/ui/spinner";
 
-const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
+const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/task`;
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
   try {
@@ -91,14 +91,13 @@ const AddTaskForm = ({
     const payload = { ...taskDetails, priority: Number(taskDetails.priority) };
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/add-task`, {
+      const response = await fetch(`${apiUrl}/add`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "include",
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      console.log(data);
 
       if (!data.success) {
         setToastData({
@@ -181,7 +180,6 @@ const AddTaskForm = ({
         isSuccess: false,
       });
     } finally {
-     
       setTaskDetails(buildFormState(initialTaskDetails));
       setisPending(false);
       setActionClicked(false);
