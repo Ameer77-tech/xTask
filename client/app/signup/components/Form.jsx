@@ -67,10 +67,9 @@ const Form = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const url = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/register-user`;
     setPending(true);
     try {
-      const res = await fetch(`https://xtask.vercel.app/api/signup`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

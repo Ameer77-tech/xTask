@@ -63,7 +63,7 @@ const Form = () => {
     e.preventDefault();
     if (!validateForm()) return;
     setErrors({});
-    const url = `https://xtask.vercel.app/api/login`;
+    const url = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/login`;
     setPending(true);
     try {
       const res = await fetch(url, {
