@@ -149,7 +149,7 @@ const AddProjectForm = ({
       return;
     }
     try {
-      const res = await fetch(`${apiUrl}/edit-project/${editingProject}`, {
+      const res = await fetch(`${apiUrl}/update/${editingProject}`, {
         method: "PATCH",
         headers: {
           "content-type": "application/json",
@@ -178,7 +178,6 @@ const AddProjectForm = ({
     } catch (err) {
       console.log(err);
     } finally {
-      setIsOpen(false);
       setIsPending(false);
       setActionClicked(false);
       seteditingProject("");

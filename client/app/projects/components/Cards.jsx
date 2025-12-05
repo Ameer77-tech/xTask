@@ -84,7 +84,7 @@ const Cards = () => {
       return;
     }
     try {
-      const res = await fetch(`${apiUrl}/edit-project/${projectData.id}`, {
+      const res = await fetch(`${apiUrl}/update/${projectData.id}`, {
         method: "PATCH",
         headers: {
           "content-type": "application/json",
