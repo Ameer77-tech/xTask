@@ -70,18 +70,15 @@ const Form = () => {
     const url = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/register-user`;
     setPending(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/register-user`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-          },
-          body: JSON.stringify(formData),
-          credentials: "include",
-        }
-      );
+      const res = await fetch(`https://xtask.vercel.app/api/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify(formData),
+        credentials: "include",
+      });
       const response = await res.json();
       if (!response.success) {
         setresponseStatus({

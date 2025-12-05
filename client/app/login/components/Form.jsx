@@ -63,7 +63,7 @@ const Form = () => {
     e.preventDefault();
     if (!validateForm()) return;
     setErrors({});
-    const url = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/verify-user`;
+    const url = `https://xtask.vercel.app/api/login`;
     setPending(true);
     try {
       const res = await fetch(url, {
@@ -72,7 +72,6 @@ const Form = () => {
           "content-type": "application/json",
         },
         body: JSON.stringify(formData),
-        credentials: "include",
       });
       const response = await res.json();
       if (!response.success) {
