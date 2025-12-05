@@ -1,9 +1,10 @@
+// app/api/signup/route.js
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req, { params }) {
-  const { id } = params;
+export async function POST(req) {
   try {
+    const body = await req.json();
     const cookieStore = cookies();
     const token = cookieStore.get("token");
 
@@ -15,13 +16,14 @@ export async function DELETE(req, { params }) {
     }
 
     const backendRes = await fetch(
-      `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/projects/delete-project/${id}`,
+      `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/projects/add-project`,
       {
-        method: "DELETE",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Cookie: `${token.name}=${token.value}`,
         },
+        body: JSON.stringify(body),
         credentials: "include",
       }
     );
@@ -39,7 +41,7 @@ export async function DELETE(req, { params }) {
       {
         success: true,
         reply: data.reply,
-        id: data.id,
+        created: data.created,
       },
       { status: 200 }
     );

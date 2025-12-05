@@ -96,7 +96,7 @@ const AddProjectForm = ({
     if (!validate()) return;
     setIsPending(true);
     try {
-      const response = await fetch(`${apiUrl}/add-project`, {
+      const response = await fetch(`${apiUrl}/add`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -139,7 +139,7 @@ const AddProjectForm = ({
     }
   };
 
-  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/projects`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/project`;
 
   const handleEdit = async (e) => {
     e.preventDefault();
