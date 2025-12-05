@@ -42,6 +42,11 @@ app.use(
     credentials: true,
   })
 );
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+});
 app.use(cookieParser());
 app.use(express.json());
 
