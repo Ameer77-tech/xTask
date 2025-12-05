@@ -70,11 +70,11 @@ const Tasks = ({ view, filter }) => {
     });
   }, [editingTask]);
 
-  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/tasks`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/task`;
   const onDelete = async () => {
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/delete-task/${taskData.id}`, {
+      const response = await fetch(`${apiUrl}/remove/${taskData.id}`, {
         method: "DELETE",
         header: {
           "content-type": "application/json",
@@ -82,7 +82,6 @@ const Tasks = ({ view, filter }) => {
         credentials: "include",
       });
       const data = await response.json();
-      console.log(data);
 
       if (!data.success) {
         settoastData({
