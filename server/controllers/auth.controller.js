@@ -45,6 +45,7 @@ export const registerUser = async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
+            path: "/",
             maxAge: 60 * 60 * 24 * 7,
           });
           return res
@@ -106,6 +107,7 @@ export const verifyUser = async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
+            path: "/",
             maxAge: 60 * 60 * 24 * 7,
           });
           return res
