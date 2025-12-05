@@ -141,7 +141,7 @@ const AddTaskForm = ({
     const payload = { ...taskDetails, priority: Number(taskDetails.priority) };
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${editingTask}`, {
+      const response = await fetch(`${apiUrl}/update/${editingTask}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         credentials: "include",

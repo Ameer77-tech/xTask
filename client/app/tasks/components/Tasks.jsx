@@ -127,7 +127,7 @@ const Tasks = ({ view, filter }) => {
   const onMark = async () => {
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${taskData.id}`, {
+      const response = await fetch(`${apiUrl}/update/${taskData.id}`, {
         method: "PATCH",
         headers: {
           "content-type": "application/json",
@@ -187,9 +187,8 @@ const Tasks = ({ view, filter }) => {
   };
 
   const onPause = async (id) => {
-    await saveTimerToDB(id);
-
     setrunningTask("");
+    await saveTimerToDB(id);
   };
   const onReset = async (id) => {
     editTask(id, { timer: 0 });
@@ -246,7 +245,7 @@ const Tasks = ({ view, filter }) => {
 
   const updateTimerInDb = async (id, data) => {
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${id}`, {
+      const response = await fetch(`${apiUrl}/update/${id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         credentials: "include",
