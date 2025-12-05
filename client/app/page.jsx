@@ -8,13 +8,8 @@ import Loading from "@/components/Loading";
 import ThemeSetter from "@/components/ThemeSetter";
 const page = async () => {
   const cookieStore = await cookies();
-
   const token = cookieStore.get("token")?.value;
-  console.log(token); 
-
-  if (!token) {
-    redirect("/login");
-  }
+  
   const cookieHeader = cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
@@ -27,6 +22,7 @@ const page = async () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          cookie: cookieHeader,
         },
         credentials: "include",
         cache: "no-store",
@@ -34,6 +30,7 @@ const page = async () => {
     );
 
     let data = await res.json();
+    console.log(data);
 
     if (data.reply === "Unauthorized") {
       redirect("/login");
@@ -52,6 +49,7 @@ const page = async () => {
           method: "GET",
           headers: {
             "content-type": "application/json",
+            cookie: cookieHeader,
           },
           credentials: "include",
         }

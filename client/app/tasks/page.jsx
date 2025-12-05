@@ -28,6 +28,7 @@ const page = async ({ params, searchParams }) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          cookie: cookieHeader,
         },
         credentials : "include",
         cache: "no-store",
