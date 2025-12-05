@@ -1,13 +1,13 @@
+// app/api/login/route.js
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  // 1. Get the username/password from the frontend
-  const body = await request.json();
-
   try {
-    // 2. Forward the request to your actual Render Backend
-    // We use the environment variable for the backend URL here
+    // 1️⃣ Get login data from frontend
+    const body = await request.json();
+
+    // 2️⃣ Forward the request to your backend
     const backendRes = await fetch(
       `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/verify-user`,
       {
@@ -21,35 +21,33 @@ export async function POST(request) {
 
     const backendData = await backendRes.json();
 
-    // 3. Check if the backend rejected the login
+    // 3️⃣ If backend login fails, return the error
     if (!backendData.success || !backendRes.ok) {
       return NextResponse.json(backendData, {
         status: backendRes.status || 401,
       });
     }
 
-    // 4. THIS IS THE CRITICAL PART
-    // We get the token from the backend's JSON response.
-    // NOTE: Ensure your backend sends the token in the body, e.g., { token: "..." }
+    // 4️⃣ Extract token from backend response
     const token = backendData.token || backendData.accessToken;
 
     if (token) {
-      // 5. Set the cookie on the Next.js Domain (vercel.app)
+      // 5️⃣ Set cookie on Next.js domain (vercel.app)
       const cookieStore = await cookies();
       cookieStore.set("auth_token", token, {
-        httpOnly: true, // Javascript can't read it (secure)
-        secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-        sameSite: "lax", // Allows it to be sent on navigation
-        path: "/", // Available everywhere in the app
-        maxAge: 60 * 60 * 24 * 7, // 1 week (adjust as needed)
+        httpOnly: true, // JS cannot access the cookie
+        secure: process.env.NODE_ENV === "production", // HTTPS only in production
+        sameSite: "lax", // "lax" is fine for first-party navigation
+        path: "/", // Available everywhere
+        maxAge: 60 * 60 * 24 * 7, // 7 days
       });
     } else {
       console.error(
-        "Login successful, but no token found in backend response body."
+        "Login successful, but no token found in backend response."
       );
     }
 
-    // 6. Respond to the frontend telling it everything went well
+    // 6️⃣ Respond to frontend
     return NextResponse.json(backendData);
   } catch (error) {
     console.error("Login API Error:", error);
