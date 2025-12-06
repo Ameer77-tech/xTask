@@ -38,8 +38,9 @@ const Privacy = () => {
               Permanently delete your data from this device. This action cannot
               be undone.
             </p>
-            <div className="flex gap-5">
+            <div className="flex gap-5 flex-col">
               <DeleteBtn />
+              <h1 className="text-accent">LOGOUT</h1>
               <Logout />
             </div>
           </div>

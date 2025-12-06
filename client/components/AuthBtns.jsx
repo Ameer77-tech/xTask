@@ -2,12 +2,9 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { FaGoogle, FaGithub } from "react-icons/fa6";
+import { githubRedirect, googleRedirect } from "@/app/actions/oauth";
 
 export const GoogleButton = () => {
-  const googleRedirect = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/google`;
-  };
-
   return (
     <Button
       onClick={googleRedirect}
@@ -21,10 +18,6 @@ export const GoogleButton = () => {
 };
 
 export const GithubButton = () => {
-  const githubRedirect = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/auth/github`;
-  };
-
   return (
     <Button
       onClick={githubRedirect}

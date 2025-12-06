@@ -19,7 +19,6 @@ export async function DELETE(req) {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          // Forward the cookie correctly
           Cookie: `${token.name}=${token.value}`,
         },
         credentials: "include",

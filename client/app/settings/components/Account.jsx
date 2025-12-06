@@ -12,7 +12,7 @@ import { Pencil } from "lucide-react";
 
 const Account = ({ user }) => {
   return (
-    <section className="lg:w-full lg:px-6 py-8 flex justify-center">
+    <section className="lg:w-full lg:px-6 px-5 w-full py-8 flex justify-center">
       <Card className="w-full max-w-6xl bg-secondary/40 border border-border/50 shadow-sm">
         <CardHeader className="text-center pb-4">
           <CardTitle className="text-4xl font-semibold">Account</CardTitle>

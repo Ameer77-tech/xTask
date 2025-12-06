@@ -1,6 +1,7 @@
 import userModel from "../models/user.model.js";
 import tasksModel from "../models/task.model.js";
 import projectsModel from "../models/project.model.js";
+import feedback from "../models/feedback.js";
 
 export const getUserData = async (req, res) => {
   const id = req.user.id;
@@ -291,5 +292,26 @@ export const exportData = async (req, res) => {
       .json({ reply: "Fetched", success: true, data: { tasks, projects } });
   } catch (err) {
     res.status(500).json({ reply: "Internal Server Error", success: false });
+  }
+};
+
+export const saveFeedBack = async (req, res) => {
+  const id = req.user.id;
+  const { message } = req.body;
+  try {
+    const { displayName } = await userModel.findOne({ _id: id });
+    try {
+      await feedback.create({
+        from: displayName,
+        feedback: message,
+      });
+      return res.status(200).json({ reply: "Feedback Sent", success: true });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ reply: "Error Sending Feedback", success: false });
+    }
+  } catch (err) {
+    return res.status(500).json({ reply: "Intrenal Error", success: false });
   }
 };

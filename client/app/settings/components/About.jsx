@@ -5,26 +5,20 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Github, Linkedin } from "lucide-react";
 import Link from "next/link";
+import SendFeedBackInput from "./SendFeedBackInput";
 
-const getAppInfo = async () => {
-  return {
-    name: "xTask",
-    version: "1.0.0",
-    description:
-      "xTask is a lightweight, privacy-focused task manager designed for personal productivity. Manage tasks, track priorities, and customize your experience effortlessly.",
-    github: "https://github.com/yourusername/xtask",
-    linkedin: "https://linkedin.com/in/yourprofile",
-  };
+const app = {
+  name: "xTask",
+  version: "1.0.0",
+  description:
+    "xTask is a lightweight, privacy-focused task manager designed for personal productivity. Manage tasks, track priorities, and customize your experience effortlessly.",
+  github: "https://github.com/yourusername/xtask",
+  linkedin: "https://linkedin.com/in/yourprofile",
 };
 
-const About = async () => {
-  const app = await getAppInfo();
-
+const About = () => {
   return (
     <section className="w-full px-8 py-10 flex justify-center">
       <Card className="w-full max-w-6xl bg-secondary/40 border border-border/50 shadow-sm">
@@ -63,23 +57,7 @@ const About = async () => {
               <span className="text-sm font-medium">LinkedIn</span>
             </Link>
           </div>
-
-          <div className="space-y-3 pt-6">
-            <label
-              htmlFor="feedback"
-              className="text-base font-medium text-foreground"
-            >
-              Request a Feature or Report a Bug
-            </label>
-            <Textarea
-              id="feedback"
-              placeholder="Describe your suggestion or issue..."
-              className="min-h-[100px] mt-3 resize-none"
-            />
-            <div className="flex justify-end pt-2">
-              <Button className="px-6 text-base">Send Feedback</Button>
-            </div>
-          </div>
+          <SendFeedBackInput />
         </CardContent>
 
         <CardFooter className="text-center text-sm text-muted-foreground pt-6">

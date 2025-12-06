@@ -51,7 +51,7 @@ const Appearance = () => {
               value={settings.theme}
               onValueChange={(value) => setSettings({ theme: value })}
             >
-              <SelectTrigger className="w-100">
+              <SelectTrigger className=" w-full">
                 <SelectValue placeholder="Select Theme" />
               </SelectTrigger>
               <SelectContent>

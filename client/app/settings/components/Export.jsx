@@ -6,7 +6,7 @@ import * as XLSX from "xlsx";
 
 const Export = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const apiurl = `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/export`;
+  const apiurl = `${process.env.NEXT_PUBLIC_XTASK_FRONTEND}/api/export`;
   const [loading, setLoading] = useState(false);
 
   const handleExport = async () => {
