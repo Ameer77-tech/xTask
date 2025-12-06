@@ -23,7 +23,7 @@ const Account = ({ user }) => {
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             <div className="relative self-center sm:self-start">
               <Image
-                src={"/pro.png"}
+                src={user.avatar || "/pro.png"}
                 alt="User avatar"
                 width={90}
                 height={90}
