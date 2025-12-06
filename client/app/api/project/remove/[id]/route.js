@@ -2,9 +2,9 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function DELETE(req, { params }) {
-  const { id } = params;
+  const { id } = await params;
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token");
 
     if (!token) {

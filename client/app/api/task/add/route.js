@@ -5,8 +5,9 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("token");
+
 
     if (!token) {
       return NextResponse.json(
@@ -27,6 +28,7 @@ export async function POST(req) {
         credentials: "include",
       }
     );
+    console.log(backendRes);
 
     const data = await backendRes.json();
 
