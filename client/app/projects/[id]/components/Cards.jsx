@@ -89,7 +89,7 @@ const AllTasks = ({ projectId }) => {
     }
     setisPending(true);
     try {
-      const response = await fetch(`${apiUrl}/edit-task/${id}`, {
+      const response = await fetch(`${apiUrl}/update/${id}`, {
         method: "PATCH",
         headers: {
           "content-type": "application/json",
