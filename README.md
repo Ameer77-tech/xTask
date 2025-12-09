@@ -1,7 +1,4 @@
-Sure — here’s the complete README fully in Markdown code block, ready to copy-paste into README.md without needing to edit formatting.
 
-
----
 
 <h1 align="center">🧠 Task & Project Manager — Productivity, Organized.</h1>
 
