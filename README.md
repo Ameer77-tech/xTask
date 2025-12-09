@@ -123,7 +123,7 @@ Pull requests are welcome!
 🧑‍💻 Author
 
 Ameer Shaik
-🔗 LinkedIn: [your link](https://www.linkedin.com/in/ameer-shaik-55b106364/)
+🔗 LinkedIn: https://www.linkedin.com/in/ameer-shaik-55b106364/
 
 
 ---
