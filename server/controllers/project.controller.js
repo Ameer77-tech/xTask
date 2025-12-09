@@ -82,7 +82,7 @@ export const getProjects = async (req, res) => {
         (acc, task) => (task.completed ? acc + 1 : acc),
         0
       );
-      const isPending = tasks.some((task) => task.completed || task.timer > 0);
+      const isPending = totalTasks > 0 && !p.completed ? true : false;
 
       return {
         ...rest,
