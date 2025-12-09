@@ -19,8 +19,7 @@ A full-stack productivity platform built to help you <b>plan work, track progres
 
 ## 🚀 Demo
 
-🔗 *Live App:* your deployed link here  
-📦 *Repository:* your repo link here
+🔗 *Live App:* https://xtask.vercel.app  
 
 <p align="center">
   <img src="https://your-demo-gif-or-screenshot.gif" width="900" alt="App Demo" />
@@ -41,10 +40,6 @@ A full-stack productivity platform built to help you <b>plan work, track progres
 | 📤 Export Data | Download user data anytime |
 
 ---
-
-## 🖥 Screenshots / UI Preview
-
-> Update the paths below once screenshots are ready.
 
 📌 Dashboard
 🎯 Today's Focus / Upcoming / Completed
