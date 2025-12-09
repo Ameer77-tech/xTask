@@ -29,12 +29,7 @@ const Account = ({ user }) => {
                 height={90}
                 className="rounded-full border border-border/60 object-cover"
               />
-              <button
-                className="absolute bottom-1 right-1 bg-primary text-primary-foreground p-1.5 rounded-full hover:bg-primary/90 transition"
-                title="Change avatar"
-              >
-                <Pencil size={14} />
-              </button>
+            
             </div>
 
             <div className="text-center sm:text-left">
