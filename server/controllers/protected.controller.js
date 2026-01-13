@@ -2,6 +2,7 @@ import userModel from "../models/user.model.js";
 import tasksModel from "../models/task.model.js";
 import projectsModel from "../models/project.model.js";
 import feedback from "../models/feedback.js";
+import mongoose from "mongoose";
 
 export const getUserData = async (req, res) => {
   const id = req.user.id;
@@ -271,23 +272,65 @@ export const getDashboardData = async (req, res) => {
 
 export const exportData = async (req, res) => {
   const userId = req.user.id;
+
   try {
     const [tasks, projects] = await Promise.all([
-      tasksModel
-        .find({ createdBy: userId })
-        .select("-_id -__v -createdBy -linkedProject -updatedAt -createdAt")
-        .lean(),
+      tasksModel.aggregate([
+        {
+          $match: {
+            createdBy: new mongoose.Types.ObjectId(userId),
+          },
+        },
+        {
+          $lookup: {
+            from: "projects",
+            localField: "linkedProject", 
+            foreignField: "_id", 
+            as: "project",
+          },
+        },
+        {
+          $unwind: {
+            path: "$project",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $addFields: {
+            projectTitle: "$project.title",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            __v: 0,
+            createdBy: 0,
+            linkedProject: 0,
+            project: 0,
+            createdAt: 0,
+            updatedAt: 0,
+          },
+        },
+      ]),
+
       projectsModel
         .find({ createdBy: userId })
         .select("-_id -__v -createdBy")
         .lean(),
-      ,
     ]);
-    res
-      .status(200)
-      .json({ reply: "Fetched", success: true, data: { tasks, projects } });
+
+    res.status(200).json({
+      reply: "Fetched",
+      success: true,
+      data: { tasks, projects },
+    });
   } catch (err) {
-    res.status(500).json({ reply: "Internal Server Error", success: false });
+    console.log(err);
+
+    res.status(500).json({
+      reply: "Internal Server Error",
+      success: false,
+    });
   }
 };
 
