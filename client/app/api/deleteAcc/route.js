@@ -26,7 +26,8 @@ export async function DELETE(req) {
     );
 
     const resData = await backendRes.json();
-
+    console.log(resData);
+    
     if (!resData.success) {
       return NextResponse.json(
         { success: false, reply: resData.reply },
@@ -34,7 +35,6 @@ export async function DELETE(req) {
       );
     }
 
-    // Optionally delete the cookie on the frontend domain
     cookieStore.set("token", "", {
       maxAge: 0,
       path: "/",
