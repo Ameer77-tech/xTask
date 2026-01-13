@@ -132,7 +132,11 @@ const Tasks = ({ view, filter }) => {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ status: "completed", completed: true }),
+        body: JSON.stringify({
+          status: "completed",
+          completed: true,
+          completedAt: new Date(),
+        }),
         credentials: "include",
       });
       const data = await response.json();
@@ -155,7 +159,10 @@ const Tasks = ({ view, filter }) => {
           message: data.reply,
           type: "success",
         });
-        editTask(data.updatedTask._id, { status: "completed" });
+        editTask(data.updatedTask._id, {
+          status: "completed",
+          comlpetedAt: new Date(),
+        });
         setTimeout(() => {
           settoastData({
             show: false,

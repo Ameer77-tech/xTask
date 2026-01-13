@@ -20,27 +20,31 @@ const page = async () => {
     .join("; ");
 
   const getUserData = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-user`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          cookie: cookieHeader,
-        },
-        credentials: "include",
-        cache: "no-store",
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-user`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            cookie: cookieHeader,
+          },
+          credentials: "include",
+          cache: "no-store",
+        }
+      );
+
+      let data = await res.json();
+
+      if (data.reply === "Unauthorized") {
+        redirect("/login");
+      } else if (!data.success) {
+        return data.reply;
+      } else {
+        return data;
       }
-    );
-
-    let data = await res.json();
-
-    if (data.reply === "Unauthorized") {
-      redirect("/login");
-    } else if (!data.success) {
-      return data.reply;
-    } else {
-      return data;
+    } catch (err) {
+      console.log(err);
     }
   };
   const getDashboardData = async () => {
@@ -58,19 +62,24 @@ const page = async () => {
       );
       return await response.json();
     } catch (err) {
-      console.err(err);
+      console.log(err);
     }
   };
 
   const userData = await getUserData();
   const DashboardData = await getDashboardData();
 
+  console.log(userData);
+
   return (
     <div className="h-screen w-screen flex justify-start">
       <ThemeSetter />
       <UserInitaializer userData={userData} />
       <AppSideBar />
-      <Dashboard data={DashboardData} name={userData.reply.displayName} />
+      <Dashboard
+        data={DashboardData ?? "Cant Fetch"}
+        name={userData?.reply?.displayName ?? "Can't Fetch"}
+      />
     </div>
   );
 };
