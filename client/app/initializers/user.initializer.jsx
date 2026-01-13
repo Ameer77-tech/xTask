@@ -6,7 +6,6 @@ const UserInitializer = ({ userData }) => {
   const setData = useUserStore((state) => state.setData);
 
   useEffect(() => {
-    console.log(localStorage.getItem("user-store"));
 
     setData({
       userName: userData.reply.userName,

@@ -23,10 +23,6 @@ export const getUserData = async (req, res) => {
   }
 };
 
-// =========================
-//  Dashboard Controller
-// =========================
-
 export const getDashboardData = async (req, res) => {
   const userId = req.user.id;
 
@@ -155,8 +151,8 @@ export const getDashboardData = async (req, res) => {
 
   const processLineChart = (tasks) => {
     for (const task of tasks) {
-      if (task.completed && isInThisWeek(task.updatedAt)) {
-        const day = getWeekdayName(task.updatedAt);
+      if (task.completed && isInThisWeek(task.completedAt)) {
+        const day = getWeekdayName(task.completedAt);
         lineChartData[day]++;
       }
     }
@@ -214,13 +210,13 @@ export const getDashboardData = async (req, res) => {
 
   const processCompleted = (tasks) => {
     for (const task of tasks) {
-      const diff = getDiffDays(task.updatedAt);
+      const diff = getDiffDays(task.completedAt);
 
       if ((task.completed && diff === 0) || (diff < 0 && diff > -4)) {
         completedData.push({
           name: task.title,
           type: task.type,
-          date: new Date(task.updatedAt).toLocaleDateString("en-US", {
+          date: new Date(task.completedAt).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",

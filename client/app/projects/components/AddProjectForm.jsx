@@ -166,7 +166,6 @@ const AddProjectForm = ({
         });
         setShowToast(true);
       } else {
-        console.log(response.updated._id);
         updateProject(response.updated._id, response.updated);
         setToastData({
           message: response.reply,

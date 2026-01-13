@@ -94,7 +94,11 @@ const AllTasks = ({ projectId }) => {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ completed: true, status: "completed" }),
+        body: JSON.stringify({
+          completed: true,
+          status: "completed",
+          completedAt: new Date(),
+        }),
         credentials: "include",
       });
       const res = await response.json();

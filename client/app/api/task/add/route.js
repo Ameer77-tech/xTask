@@ -28,7 +28,6 @@ export async function POST(req) {
         credentials: "include",
       }
     );
-    console.log(backendRes);
 
     const data = await backendRes.json();
 
