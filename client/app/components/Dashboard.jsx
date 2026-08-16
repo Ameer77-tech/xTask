@@ -5,6 +5,11 @@ import Charts from "./Charts";
 import MainContent from "./MainContent";
 
 const Dashboard = ({ data, name }) => {
+
+  if (typeof data === "string") {
+  return <div>{data}</div>;
+}
+
   const cardsData = {
     taskCardsData: data.dashboardData.taskCardData,
     projectCardData: data.dashboardData.projectCardData,

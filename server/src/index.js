@@ -14,6 +14,7 @@ import taskRouter from "../routes/task.js";
 import projectRouter from "../routes/project.js";
 import helmet from "helmet";
 import ratelimiter from "../middlewares/ratelimiter.js";
+import logger from "../lib/logger.js";
 
 await connectDB();
 
@@ -40,7 +41,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
@@ -58,6 +59,7 @@ app.use(ratelimiter);
 app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(logger);
 app.use("/api/auth/google", googleAuthRouter);
 app.use("/api/auth/github", githubAuthRouter);
 app.use("/api/auth", authRouter);
@@ -65,6 +67,10 @@ app.use("/api/auth", authRouter);
 app.use("/api", protectedRouter);
 app.use("/api/tasks", taskRouter);
 app.use("/api/projects", projectRouter);
+
+app.get("/health", (req, res) => {
+  res.send("Server Running");
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

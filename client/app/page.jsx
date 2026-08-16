@@ -20,6 +20,7 @@ const page = async () => {
     .join("; ");
 
   const getUserData = async () => {
+    let data;
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-user`,
@@ -31,20 +32,20 @@ const page = async () => {
           },
           credentials: "include",
           cache: "no-store",
-        }
+        },
       );
 
-      let data = await res.json();
-
-      if (data.reply === "Unauthorized") {
-        redirect("/login");
-      } else if (!data.success) {
-        return data.reply;
-      } else {
-        return data;
-      }
+      data = await res.json();
     } catch (err) {
       console.log(err);
+    }
+
+    if (data.reply === "Unauthorized") {
+      redirect("/login");
+    } else if (!data.success) {
+      return data.reply;
+    } else {
+      return data;
     }
   };
   const getDashboardData = async () => {
@@ -58,7 +59,7 @@ const page = async () => {
             cookie: cookieHeader,
           },
           credentials: "include",
-        }
+        },
       );
       return await response.json();
     } catch (err) {
@@ -77,7 +78,7 @@ const page = async () => {
       <UserInitaializer userData={userData} />
       <AppSideBar />
       <Dashboard
-        data={DashboardData ?? "Cant Fetch"}
+        data={DashboardData.success ? DashboardData : "Cant Fetch"}
         name={userData?.reply?.displayName ?? "Can't Fetch"}
       />
     </div>
