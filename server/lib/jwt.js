@@ -1,20 +1,28 @@
 import jwt from "jsonwebtoken";
 import userModel from "../models/user.model.js";
 
+const JWT_SECRET = process.env.JWT_SECRET || "SECRET";
+
 export const generateToken = (payload) => {
-  const token = jwt.sign({ id: payload }, "SECRET", {
+  const token = jwt.sign({ id: payload }, JWT_SECRET, {
     expiresIn: "7d",
   });
   return token;
 };
 
 export const decodeToken = async (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies?.token;
 
   if (!token) {
     return res.status(401).json({ reply: "Unauthorized", success: false });
   }
-  const userId = jwt.verify(token, "SECRET");
+
+  let userId;
+  try {
+    userId = jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    return res.status(401).json({ reply: "Unauthorized", success: false });
+  }
 
   try {
     const user = await userModel.findOne({ _id: userId.id });
