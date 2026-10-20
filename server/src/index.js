@@ -15,6 +15,7 @@ import projectRouter from "../routes/project.js";
 import helmet from "helmet";
 import ratelimiter from "../middlewares/ratelimiter.js";
 import logger from "../lib/logger.js";
+import { errorMiddleware } from "../middlewares/error.middleware.js";
 
 await connectDB();
 
@@ -27,7 +28,6 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   frontend,
-  "https://x-task-rho.vercel.app",
 ];
 
 app.use(
@@ -70,7 +70,11 @@ app.use("/api/projects", projectRouter);
 
 app.get("/health", (req, res) => {
   res.send("Server Running");
+
 });
+
+
+app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

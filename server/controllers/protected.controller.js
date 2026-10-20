@@ -6,22 +6,19 @@ import mongoose from "mongoose";
 
 export const getUserData = async (req, res) => {
   const id = req.user.id;
-  try {
-    const user = await userModel.findOne({ _id: id });
-    if (user === null) {
-      return res.status(401).json({ reply: "Unauthorized", success: false });
-    }
-    res.status(200).json({
-      reply: {
-        displayName: user.displayName,
-        email: !user.email == "" ? user.email : user.userName,
-        avatar: user.avatar,
-      },
-      success: true,
-    });
-  } catch (err) {
-    res.status(500).json({ reply: "Internal Server Error", success: false });
+  const user = await userModel.findOne({ _id: id });
+  if (!user) {
+    return res.status(401).json({ reply: "Unauthorized", success: false });
   }
+  return res.status(200).json({
+    reply: {
+      displayName: user.displayName,
+      email:
+        user.email && user.email.trim() !== "" ? user.email : user.userName,
+      avatar: user.avatar,
+    },
+    success: true,
+  });
 };
 
 export const getDashboardData = async (req, res) => {
@@ -231,126 +228,107 @@ export const getDashboardData = async (req, res) => {
   // Main Execution
   // -------------------------
 
-  try {
-    const [allTasks, allProjects] = await Promise.all([
-      tasksModel.find({ createdBy: userId }),
-      projectsModel.find({ createdBy: userId }),
-    ]);
+  const [allTasks, allProjects] = await Promise.all([
+    tasksModel.find({ createdBy: userId }),
+    projectsModel.find({ createdBy: userId }),
+  ]);
 
-    // Process all dashboard sections
-    processBarChart(allTasks);
-    processLineChart(allTasks);
-    processTaskCards(allTasks);
-    processTodayFocus(allTasks);
-    processUpcoming(allTasks);
-    processCompleted(allTasks);
+  // Process all dashboard sections
+  processBarChart(allTasks);
+  processLineChart(allTasks);
+  processTaskCards(allTasks);
+  processTodayFocus(allTasks);
+  processUpcoming(allTasks);
+  processCompleted(allTasks);
 
-    processProjectCards(allProjects);
+  processProjectCards(allProjects);
 
-    // Final Response
-    res.status(200).json({
-      success: true,
-      reply: "Fetched Dashboard Data",
-      dashboardData: {
-        taskCardData,
-        projectCardData,
-        barChartData,
-        lineChartData,
-        todaysFocusData,
-        upcomingData,
-        completedData,
-      },
-    });
-  } catch (err) {
-    console.error("Dashboard Error:", err);
-    res.status(500).json({
-      success: false,
-      reply: "Internal Server Error",
-    });
-  }
+  // Final Response
+  return res.status(200).json({
+    success: true,
+    reply: "Fetched Dashboard Data",
+    dashboardData: {
+      taskCardData,
+      projectCardData,
+      barChartData,
+      lineChartData,
+      todaysFocusData,
+      upcomingData,
+      completedData,
+    },
+  });
 };
 
 export const exportData = async (req, res) => {
   const userId = req.user.id;
 
-  try {
-    const [tasks, projects] = await Promise.all([
-      tasksModel.aggregate([
-        {
-          $match: {
-            createdBy: new mongoose.Types.ObjectId(userId),
-          },
+  const [tasks, projects] = await Promise.all([
+    tasksModel.aggregate([
+      {
+        $match: {
+          createdBy: new mongoose.Types.ObjectId(userId),
         },
-        {
-          $lookup: {
-            from: "projects",
-            localField: "linkedProject", 
-            foreignField: "_id", 
-            as: "project",
-          },
+      },
+      {
+        $lookup: {
+          from: "projects",
+          localField: "linkedProject", 
+          foreignField: "_id", 
+          as: "project",
         },
-        {
-          $unwind: {
-            path: "$project",
-            preserveNullAndEmptyArrays: true,
-          },
+      },
+      {
+        $unwind: {
+          path: "$project",
+          preserveNullAndEmptyArrays: true,
         },
-        {
-          $addFields: {
-            projectTitle: "$project.title",
-          },
+      },
+      {
+        $addFields: {
+          projectTitle: "$project.title",
         },
-        {
-          $project: {
-            _id: 0,
-            __v: 0,
-            createdBy: 0,
-            linkedProject: 0,
-            project: 0,
-            createdAt: 0,
-            updatedAt: 0,
-          },
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          createdBy: 0,
+          linkedProject: 0,
+          project: 0,
+          createdAt: 0,
+          updatedAt: 0,
         },
-      ]),
+      },
+    ]),
 
-      projectsModel
-        .find({ createdBy: userId })
-        .select("-_id -__v -createdBy")
-        .lean(),
-    ]);
+    projectsModel
+      .find({ createdBy: userId })
+      .select("-_id -__v -createdBy")
+      .lean(),
+  ]);
 
-    res.status(200).json({
-      reply: "Fetched",
-      success: true,
-      data: { tasks, projects },
-    });
-  } catch (err) {
-    console.log(err);
-
-    res.status(500).json({
-      reply: "Internal Server Error",
-      success: false,
-    });
-  }
+  return res.status(200).json({
+    reply: "Fetched",
+    success: true,
+    data: { tasks, projects },
+  });
 };
 
 export const saveFeedBack = async (req, res) => {
   const id = req.user.id;
-  const { message } = req.body;
-  try {
-    const { displayName } = await userModel.findOne({ _id: id });
-    try {
-      await feedback.create({
-        from: displayName,
-        feedback: message,
-      });
-      return res.status(200).json({ reply: "Feedback Sent", success: true });
-    } catch (err) {
-      return res
-        .status(500)
-        .json({ reply: "Error Sending Feedback", success: false });
-    }
-  } catch (err) {
-    return res.status(500).json({ reply: "Intrenal Error", success: false });
+  const { message } = req.body || {};
+  if (!message || typeof message !== "string" || message.trim() === "") {
+    return res.status(400).json({ reply: "Feedback message cannot be empty", success: false });
   }
+
+  const user = await userModel.findOne({ _id: id });
+  if (!user) {
+    return res.status(404).json({ reply: "User not found", success: false });
+  }
+
+  await feedback.create({
+    from: user.displayName,
+    feedback: message.trim(),
+  });
+  return res.status(200).json({ reply: "Feedback Sent", success: true });
 };
