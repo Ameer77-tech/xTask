@@ -1,50 +1,35 @@
 import projectsModel from "../models/project.model.js";
 import tasksModel from "../models/task.model.js";
-import userModel from "../models/user.model.js";
 import mongoose from "mongoose";
+import {
+  addProjectSchema,
+  editProjectSchema,
+} from "../validation/project.validate.js";
+import { formatZodError } from "../validation/helpers.js";
 
 export const addProject = async (req, res) => {
   const userId = req.user.id;
-  if (!req.body || Object.keys(req.body).length === 0) {
+  if (!req.body || typeof req.body !== "object" || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       success: false,
       reply: "Empty request body",
     });
   }
-  const { title, description, dueDate, priority, status } = req.body;
-  if (!title || title.trim().length === 0) {
-    return res.status(400).json({
-      success: false,
-      reply: "Title is required",
-    });
+
+  const result = addProjectSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json(formatZodError(result.error));
   }
-  if (description && typeof description !== "string") {
-    return res.status(400).json({
-      success: false,
-      reply: "Description must be a string",
-    });
-  }
-  if (!dueDate || isNaN(Date.parse(dueDate))) {
-    return res.status(400).json({
-      success: false,
-      reply: "Invalid dueDate format, must be a valid date",
-    });
-  }
-  const validPriorities = [1, 2, 3];
-  if (priority !== undefined && !validPriorities.includes(Number(priority))) {
-    return res.status(400).json({
-      success: false,
-      reply: "Priority must be 1 (low), 2 (medium), or 3 (high)",
-    });
-  }
+
+  const { title, description, dueDate, priority, status } = result.data;
 
   const project = {
     createdBy: userId,
-    title: title.trim(),
-    description: description || "",
-    dueDate: dueDate,
-    priority: priority !== undefined ? Number(priority) : 1,
-    status: status || "not-started",
+    title,
+    description,
+    dueDate,
+    priority,
+    status,
   };
 
   const created = await projectsModel.create(project);
@@ -60,7 +45,7 @@ export const addProject = async (req, res) => {
 
 export const getProjects = async (req, res) => {
   const userId = req.user.id;
-  const filter = req.params.filter;
+  const filter = req.params.filter || "all";
 
   const allProjects = await projectsModel
     .find({ createdBy: userId })
@@ -137,16 +122,21 @@ export const editProject = async (req, res) => {
   const userId = req.user.id;
   const id = req.params.projectId;
 
-  if (!req.body || Object.keys(req.body).length === 0) {
+  if (!req.body || typeof req.body !== "object" || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       success: false,
       reply: "Empty request body",
     });
   }
 
+  const result = editProjectSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json(formatZodError(result.error));
+  }
+
   const updated = await projectsModel.findOneAndUpdate(
     { createdBy: userId, _id: id },
-    req.body,
+    result.data,
     { new: true, runValidators: true }
   );
 
