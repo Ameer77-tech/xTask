@@ -3,6 +3,11 @@ import { generateToken } from "../lib/jwt.js";
 import userModel from "../models/user.model.js";
 import tasksModel from "../models/task.model.js";
 import projectsModel from "../models/project.model.js";
+import {
+  validateLogin,
+  validateRegister,
+} from "../validation/auth.validate.js";
+import { formatZodError } from "../validation/helpers.js";
 
 export const registerUser = async (req, res) => {
   const data = req.body;
@@ -12,25 +17,13 @@ export const registerUser = async (req, res) => {
       .json({ reply: "Fields Can't Be Empty", success: false });
   }
 
-  const { userName, displayName, password } = data;
-  if (
-    !userName ||
-    typeof userName !== "string" ||
-    userName.trim() === "" ||
-    !displayName ||
-    typeof displayName !== "string" ||
-    displayName.trim() === "" ||
-    !password ||
-    typeof password !== "string" ||
-    password === ""
-  ) {
-    return res
-      .status(400)
-      .json({ reply: "All Fields Must be Filled", success: false });
+  const result = validateRegister.safeParse(data);
+  if (!result.success) {
+    return res.status(400).json(formatZodError(result.error));
   }
 
   const exists = await userModel.find({
-    userName: userName.trim(),
+    userName: result.data.userName,
     provider: "local",
   });
   if (exists.length > 0) {
@@ -41,11 +34,12 @@ export const registerUser = async (req, res) => {
     });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(result.data.password, 10);
   const user = {
-    userName: userName.trim(),
-    displayName: displayName.trim(),
+    userName: result.data.userName,
+    displayName: result.data.displayName,
     password: hashedPassword,
+    email: result.data.email || "",
     provider: "local",
   };
 
@@ -58,9 +52,7 @@ export const registerUser = async (req, res) => {
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-  return res
-    .status(200)
-    .json({ reply: "SignUp Success", success: true });
+  return res.status(200).json({ reply: "SignUp Success", success: true });
 };
 
 export const verifyUser = async (req, res) => {
@@ -71,31 +63,20 @@ export const verifyUser = async (req, res) => {
       .json({ reply: "Fields Can't Be Empty", success: false });
   }
 
-  const { userName, password } = data;
-  if (
-    !userName ||
-    typeof userName !== "string" ||
-    userName.trim() === "" ||
-    !password ||
-    typeof password !== "string" ||
-    password === ""
-  ) {
-    return res
-      .status(400)
-      .json({ reply: "All Fields Must be Filled", success: false });
+  const result = validateLogin.safeParse(data);
+  if (!result.success) {
+    return res.status(400).json(formatZodError(result.error));
   }
 
   const user = await userModel
-    .findOne({ userName: userName.trim(), provider: "local" })
+    .findOne({ userName: result.data.userName, provider: "local" })
     .select("password");
 
   if (!user) {
-    return res
-      .status(401)
-      .json({ reply: "User Not Found", success: false });
+    return res.status(401).json({ reply: "User Not Found", success: false });
   }
 
-  const matched = await bcrypt.compare(password, user.password);
+  const matched = await bcrypt.compare(result.data.password, user.password);
   if (!matched) {
     return res
       .status(401)
@@ -110,9 +91,7 @@ export const verifyUser = async (req, res) => {
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-  return res
-    .status(200)
-    .json({ reply: "Login Success", success: true });
+  return res.status(200).json({ reply: "Login Success", success: true });
 };
 
 export const logOutUser = (req, res) => {

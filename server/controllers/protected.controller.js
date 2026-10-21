@@ -3,6 +3,8 @@ import tasksModel from "../models/task.model.js";
 import projectsModel from "../models/project.model.js";
 import feedback from "../models/feedback.js";
 import mongoose from "mongoose";
+import { feedbackSchema } from "../validation/feedback.validate.js";
+import { formatZodError } from "../validation/helpers.js";
 
 export const getUserData = async (req, res) => {
   const id = req.user.id;
@@ -316,9 +318,9 @@ export const exportData = async (req, res) => {
 
 export const saveFeedBack = async (req, res) => {
   const id = req.user.id;
-  const { message } = req.body || {};
-  if (!message || typeof message !== "string" || message.trim() === "") {
-    return res.status(400).json({ reply: "Feedback message cannot be empty", success: false });
+  const result = feedbackSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json(formatZodError(result.error));
   }
 
   const user = await userModel.findOne({ _id: id });
@@ -328,7 +330,7 @@ export const saveFeedBack = async (req, res) => {
 
   await feedback.create({
     from: user.displayName,
-    feedback: message.trim(),
+    feedback: result.data.message,
   });
   return res.status(200).json({ reply: "Feedback Sent", success: true });
 };
