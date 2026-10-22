@@ -19,34 +19,49 @@ passport.use(
       if (!profile) {
         return done(null, false);
       }
-      var user = {
-        userName: profile.name.givenName,
+      const email =
+        profile.emails && profile.emails[0] && profile.emails[0].value
+          ? profile.emails[0].value.toLowerCase().trim()
+          : "";
+      const avatar =
+        profile.photos && profile.photos[0] && profile.photos[0].value
+          ? profile.photos[0].value
+          : "";
+
+      const user = {
+        userName: profile.name?.givenName || profile.displayName || `google_${profile.id}`,
         googleId: profile.id,
-        displayName: profile.displayName,
-        email: profile.emails[0].value,
-        avatar: profile.photos[0].value,
-        provider: profile.provider,
+        displayName: profile.displayName || profile.name?.givenName || "User",
+        email,
+        avatar,
+        provider: profile.provider || "google",
       };
 
       try {
-        const userInDb = await userModel.findOne({ googleId: user.googleId });
-        if (!userInDb) {
-          try {
-            const created = await userModel.create(user);
-            if (!created) {
-              return done(new Error("User creation failed"));
-            }
-            const token = generateToken(created._id);
-            return done(null, { user: created, token });
-          } catch (err) {
-            return done(err);
+        // 1. Check if user exists by googleId
+        let existingUser = await userModel.findOne({ googleId: user.googleId });
+
+        // 2. If not found by googleId, check by email to safely link accounts
+        if (!existingUser && user.email) {
+          existingUser = await userModel.findOne({ email: user.email });
+        }
+
+        if (!existingUser) {
+          const created = await userModel.create(user);
+          if (!created) {
+            return done(new Error("User creation failed"));
           }
+          const token = generateToken(created._id);
+          return done(null, { user: created, token });
         } else {
-          const updatedUser = await userModel.findOneAndUpdate(
-            { googleId: user.googleId },
-            {
-              lastLogin: new Date(),
-            },
+          const updateFields = {
+            lastLogin: new Date(),
+            ...(existingUser.googleId ? {} : { googleId: user.googleId }),
+            ...(!existingUser.avatar && user.avatar ? { avatar: user.avatar } : {}),
+          };
+          const updatedUser = await userModel.findByIdAndUpdate(
+            existingUser._id,
+            updateFields,
             { new: true }
           );
           const token = generateToken(updatedUser._id);
@@ -69,37 +84,52 @@ passport.use(
       prompt: "select_account consent",
     },
     async (accessToken, refreshToken, profile, done) => {
-
       if (!profile) {
         return done(null, false);
       }
-      var user = {
-        userName: profile.username,
+      const email =
+        profile.emails && profile.emails[0] && profile.emails[0].value
+          ? profile.emails[0].value.toLowerCase().trim()
+          : "";
+      const avatar =
+        profile.photos && profile.photos[0] && profile.photos[0].value
+          ? profile.photos[0].value
+          : "";
+
+      const user = {
+        userName: profile.username || `github_${profile.id}`,
         githubId: profile.id,
-        displayName: profile.displayName || profile.userName,
-        avatar: profile.photos[0].value,
-        provider: profile.provider,
+        displayName: profile.displayName || profile.username || "User",
+        email,
+        avatar,
+        provider: profile.provider || "github",
       };
 
       try {
-        const userInDb = await userModel.findOne({ githubId: user.githubId });
-        if (!userInDb) {
-          try {
-            const created = await userModel.create(user);
-            if (!created) {
-              return done(new Error("User creation failed"));
-            }
-            const token = generateToken(created._id);
-            return done(null, { user: created, token });
-          } catch (err) {
-            return done(err);
+        // 1. Check if user exists by githubId
+        let existingUser = await userModel.findOne({ githubId: user.githubId });
+
+        // 2. If not found by githubId, check by email to safely link accounts
+        if (!existingUser && user.email) {
+          existingUser = await userModel.findOne({ email: user.email });
+        }
+
+        if (!existingUser) {
+          const created = await userModel.create(user);
+          if (!created) {
+            return done(new Error("User creation failed"));
           }
+          const token = generateToken(created._id);
+          return done(null, { user: created, token });
         } else {
-          const updatedUser = await userModel.findOneAndUpdate(
-            { githubId: user.githubId },
-            {
-              lastLogin: new Date(),
-            },
+          const updateFields = {
+            lastLogin: new Date(),
+            ...(existingUser.githubId ? {} : { githubId: user.githubId }),
+            ...(!existingUser.avatar && user.avatar ? { avatar: user.avatar } : {}),
+          };
+          const updatedUser = await userModel.findByIdAndUpdate(
+            existingUser._id,
+            updateFields,
             { new: true }
           );
           const token = generateToken(updatedUser._id);

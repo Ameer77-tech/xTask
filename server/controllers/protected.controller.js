@@ -108,142 +108,111 @@ export const getDashboardData = async (req, res) => {
   // Processing Functions
   // -------------------------
 
-  const processTaskCards = (tasks) => {
-    for (const task of tasks) {
-      if (task.type !== "personal") continue;
+  // -------------------------
+  // Main Execution (Single-Pass Aggregation)
+  // -------------------------
 
-      const diff = getDiffDays(task.dueDate);
+  const [allTasks, allProjects] = await Promise.all([
+    tasksModel.find({ createdBy: userId }).lean(),
+    projectsModel.find({ createdBy: userId }).lean(),
+  ]);
 
+  for (const task of allTasks) {
+    const diff = getDiffDays(task.dueDate);
+    const diffCompleted = task.completedAt ? getDiffDays(task.completedAt) : null;
+
+    // 1. Task cards (personal tasks only)
+    if (task.type === "personal") {
       if (diff === 0) {
         if (!task.completed) taskCardData.dueToday++;
         taskCardData.todaysProgress++;
         if (task.completed) taskCardData.todayCompleted++;
         else taskCardData.todayPending++;
       }
-
       if (diff < 0) taskCardData.overDue++;
     }
-  };
 
-  const processProjectCards = (projects) => {
-    for (const project of projects) {
-      const diff = getDiffDays(project.dueDate);
-      if (project.completed) projectCardData.completed++;
-      if (diff === 0) projectCardData.dueToday++;
-      if (diff < 0) projectCardData.overDue++;
-
-      projectCardData.totalProjects++;
+    // 2. Bar chart
+    if (task.completed) {
+      barChartData.completed++;
+    } else {
+      barChartData.pending++;
+      if (diff < 0) barChartData.overDue++;
     }
-  };
 
-  const processBarChart = (tasks) => {
-    for (const task of tasks) {
-      const diff = getDiffDays(task.dueDate);
-
-      if (task.completed) {
-        barChartData.completed++;
-      } else {
-        barChartData.pending++;
-        if (diff < 0) barChartData.overDue++;
-      }
+    // 3. Line chart
+    if (task.completed && isInThisWeek(task.completedAt)) {
+      const day = getWeekdayName(task.completedAt);
+      lineChartData[day]++;
     }
-  };
 
-  const processLineChart = (tasks) => {
-    for (const task of tasks) {
-      if (task.completed && isInThisWeek(task.completedAt)) {
-        const day = getWeekdayName(task.completedAt);
-        lineChartData[day]++;
-      }
+    // 4. Today focus
+    if ((diff === 0 || diff === -1) && !task.completed) {
+      todaysFocusData.push({
+        id: task._id,
+        name: task.title,
+        priority:
+          task.priority === 1
+            ? "High"
+            : task.priority === 2
+            ? "Medium"
+            : "Low",
+        type: task.type,
+        date:
+          diff === 0
+            ? "today"
+            : `yesterday ${new Date(task.dueDate).toLocaleDateString(
+                "en-US",
+                {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                }
+              )}`,
+      });
     }
-  };
 
-  const processTodayFocus = (tasks) => {
-    for (const task of tasks) {
-      const diff = getDiffDays(task.dueDate);
-
-      if ((diff === 0 || diff === -1) && !task.completed) {
-        todaysFocusData.push({
-          id: task._id,
-          name: task.title,
-          priority:
-            task.priority === 1
-              ? "High"
-              : task.priority === 2
-              ? "Medium"
-              : "Low",
-          type: task.type,
-          date:
-            diff === 0
-              ? "today"
-              : `yesterday ${new Date(task.dueDate).toLocaleDateString(
-                  "en-US",
-                  {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  }
-                )}`,
-        });
-      }
+    // 5. Upcoming tasks
+    if (!task.completed && diff > 0 && diff <= 3) {
+      upcomingData.push({
+        id: task._id,
+        name: task.title,
+        type: task.type,
+        date: new Date(task.dueDate).toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+      });
     }
-  };
 
-  const processUpcoming = (tasks) => {
-    for (const task of tasks) {
-      const diff = getDiffDays(task.dueDate);
-
-      if (!task.completed && diff > 0 && diff <= 3) {
-        upcomingData.push({
-          id: task._id,
-          name: task.title,
-          type: task.type,
-          date: new Date(task.dueDate).toLocaleString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          }),
-        });
-      }
+    // 6. Completed tasks
+    if (
+      task.completed &&
+      diffCompleted !== null &&
+      (diffCompleted === 0 || (diffCompleted < 0 && diffCompleted > -4))
+    ) {
+      completedData.push({
+        name: task.title,
+        type: task.type,
+        date: new Date(task.completedAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+      });
     }
-  };
+  }
 
-  const processCompleted = (tasks) => {
-    for (const task of tasks) {
-      const diff = getDiffDays(task.completedAt);
+  // Project cards
+  for (const project of allProjects) {
+    const diff = getDiffDays(project.dueDate);
+    if (project.completed) projectCardData.completed++;
+    if (diff === 0) projectCardData.dueToday++;
+    if (diff < 0) projectCardData.overDue++;
 
-      if ((task.completed && diff === 0) || (diff < 0 && diff > -4)) {
-        completedData.push({
-          name: task.title,
-          type: task.type,
-          date: new Date(task.completedAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          }),
-        });
-      }
-    }
-  };
-
-  // -------------------------
-  // Main Execution
-  // -------------------------
-
-  const [allTasks, allProjects] = await Promise.all([
-    tasksModel.find({ createdBy: userId }),
-    projectsModel.find({ createdBy: userId }),
-  ]);
-
-  // Process all dashboard sections
-  processBarChart(allTasks);
-  processLineChart(allTasks);
-  processTaskCards(allTasks);
-  processTodayFocus(allTasks);
-  processUpcoming(allTasks);
-  processCompleted(allTasks);
-
-  processProjectCards(allProjects);
+    projectCardData.totalProjects++;
+  }
 
   // Final Response
   return res.status(200).json({
@@ -329,7 +298,7 @@ export const saveFeedBack = async (req, res) => {
   }
 
   await feedback.create({
-    from: user.displayName,
+    from: user.displayName || user.userName || "Anonymous",
     feedback: result.data.message,
   });
   return res.status(200).json({ reply: "Feedback Sent", success: true });

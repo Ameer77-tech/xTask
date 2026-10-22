@@ -43,6 +43,8 @@ const projectSchema = new mongoose.Schema({
   },
 });
 
+projectSchema.index({ createdBy: 1, status: 1 });
+
 const projectsModel = mongoose.model("projects", projectSchema);
 
 export default projectsModel;

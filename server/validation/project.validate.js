@@ -8,6 +8,7 @@ export const addProjectSchema = z.object({
     .max(200, "Title cannot exceed 200 characters"),
   description: z
     .string({ error: "Description must be a string" })
+    .max(5000, "Description cannot exceed 5000 characters")
     .optional()
     .default(""),
   dueDate: z
@@ -31,8 +32,16 @@ export const addProjectSchema = z.object({
 });
 
 export const editProjectSchema = z.object({
-  title: z.string().trim().min(1, "Title cannot be empty").optional(),
-  description: z.string().optional(),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title cannot be empty")
+    .max(200, "Title cannot exceed 200 characters")
+    .optional(),
+  description: z
+    .string()
+    .max(5000, "Description cannot exceed 5000 characters")
+    .optional(),
   dueDate: z
     .string()
     .optional()

@@ -1,5 +1,6 @@
 import express from "express";
 import passport from "passport";
+import { generateAuthCode } from "../lib/authCode.js";
 
 const githubAuthRouter = express.Router();
 
@@ -13,7 +14,8 @@ githubAuthRouter.get(
   }),
   (req, res) => {
     const { token } = req.user;
-    res.redirect(`${process.env.CLIENT_URL}/api/oauth/github?token=${token}`);
+    const code = generateAuthCode(token);
+    res.redirect(`${process.env.CLIENT_URL}/api/oauth/github?code=${code}`);
   }
 );
 

@@ -56,5 +56,9 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
+taskSchema.index({ createdBy: 1, type: 1, status: 1 });
+taskSchema.index({ linkedProject: 1 });
+taskSchema.index({ createdBy: 1, dueDate: 1 });
+
 const tasksModel = mongoose.model("tasks", taskSchema);
 export default tasksModel;

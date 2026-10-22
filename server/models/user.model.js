@@ -1,18 +1,17 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
     userName: {
-      type: "String",
+      type: String,
+      trim: true,
     },
     displayName: {
-      type: "String",
+      type: String,
+      trim: true,
     },
     email: {
       type: String,
-      required: function () {
-        return this.googleId && this.githubId;
-      },
       default: "",
       lowercase: true,
       trim: true,
@@ -43,8 +42,9 @@ const userSchema = new mongoose.Schema(
       ref: "projects",
     },
   },
-
   { timestamps: true }
 );
+
+userSchema.index({ userName: 1, provider: 1 }, { unique: true, sparse: true });
 
 export default mongoose.model("User", userSchema);
