@@ -8,6 +8,7 @@ import {
   validateRegister,
 } from "../validation/auth.validate.js";
 import { formatZodError } from "../validation/helpers.js";
+import { redeemAuthCode } from "../lib/authCode.js";
 
 export const registerUser = async (req, res) => {
   const data = req.body;
@@ -115,9 +116,37 @@ export const deleteAccount = async (req, res) => {
     tasksModel.deleteMany({ createdBy: userId }),
     projectsModel.deleteMany({ createdBy: userId }),
   ]);
-
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/",
+  });
   return res.status(200).json({
     success: true,
     reply: "Account deleted successfully",
+  });
+};
+
+export const exchangeAuthCode = (req, res) => {
+  const { code } = req.body || {};
+  if (!code || typeof code !== "string" || code.trim().length === 0) {
+    return res.status(400).json({
+      success: false,
+      reply: "Authorization code is required",
+    });
+  }
+
+  const token = redeemAuthCode(code.trim());
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      reply: "Invalid or expired authorization code",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    token,
   });
 };

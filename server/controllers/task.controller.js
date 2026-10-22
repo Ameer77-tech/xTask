@@ -34,23 +34,29 @@ export const addTask = async (req, res) => {
     linkedProject: type === "project" ? linkedProject : null,
   };
 
+  if (task.linkedProject !== null) {
+    const projectExists = await projectsModel.findOne({
+      _id: linkedProject,
+      createdBy: userId,
+    });
+    if (!projectExists) {
+      return res.status(404).json({
+        reply: "Linked project not found or unauthorized",
+        success: false,
+      });
+    }
+  }
+
   const created = await tasksModel.create(task);
   if (task.linkedProject !== null) {
-    const updated = await projectsModel.findOneAndUpdate(
+    await projectsModel.updateOne(
       { _id: linkedProject, createdBy: userId },
       {
         $push: {
           tasks: created._id,
         },
-      },
-      { new: true, runValidators: true }
+      }
     );
-    if (!updated) {
-      return res.status(400).json({
-        reply: "Task Was Created But Failed Link The Project",
-        success: false,
-      });
-    }
   }
 
   return res
@@ -104,9 +110,26 @@ export const editTask = async (req, res) => {
   }
 
   // Zod schema automatically strips unknown/disallowed fields (_id, createdBy, linkedProject)
+  const updateData = { ...result.data };
+
+  // Synchronize completion status and timestamp
+  if (updateData.status === "completed" || updateData.completed === true) {
+    updateData.completed = true;
+    updateData.status = "completed";
+    if (!updateData.completedAt) {
+      updateData.completedAt = new Date();
+    }
+  } else if (
+    (updateData.status && updateData.status !== "completed") ||
+    updateData.completed === false
+  ) {
+    updateData.completed = false;
+    updateData.completedAt = null;
+  }
+
   const updatedTask = await tasksModel.findOneAndUpdate(
     { createdBy: userId, _id: taskId },
-    result.data,
+    updateData,
     { new: true, runValidators: true, strict: "throw" }
   );
 
@@ -134,6 +157,14 @@ export const deleteTask = async (req, res) => {
   if (!deleted) {
     return res.status(404).json({ reply: "Task not found", success: false });
   }
+
+  if (deleted.linkedProject) {
+    await projectsModel.updateOne(
+      { _id: deleted.linkedProject, createdBy: userId },
+      { $pull: { tasks: deleted._id } }
+    );
+  }
+
   return res
     .status(200)
     .json({ reply: "Task Deleted", success: true, deleted });

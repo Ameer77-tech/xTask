@@ -148,12 +148,18 @@ export const editProject = async (req, res) => {
   }
 
   // When marking project completed, mark all its linked tasks completed instead of permanently deleting them
-  if (req.body.completed && updated.tasks?.length > 0) {
-    const objectIds = updated.tasks.map(
+  if (req.body.completed) {
+    const objectIds = (updated.tasks || []).map(
       (taskId) => new mongoose.Types.ObjectId(taskId)
     );
     await tasksModel.updateMany(
-      { _id: { $in: objectIds } },
+      {
+        $or: [
+          { linkedProject: id },
+          ...(objectIds.length > 0 ? [{ _id: { $in: objectIds } }] : []),
+        ],
+        createdBy: userId,
+      },
       { $set: { completed: true, status: "completed", completedAt: new Date() } }
     );
   }
@@ -182,12 +188,16 @@ export const deleteProject = async (req, res) => {
       .json({ reply: "No Projects to Delete", success: false });
   }
 
-  if (deleted.tasks?.length > 0) {
-    const objectIds = deleted.tasks.map(
-      (taskId) => new mongoose.Types.ObjectId(taskId)
-    );
-    await tasksModel.deleteMany({ _id: { $in: objectIds } });
-  }
+  const objectIds = (deleted.tasks || []).map(
+    (taskId) => new mongoose.Types.ObjectId(taskId)
+  );
+  await tasksModel.deleteMany({
+    $or: [
+      { linkedProject: id },
+      ...(objectIds.length > 0 ? [{ _id: { $in: objectIds } }] : []),
+    ],
+    createdBy: userId,
+  });
 
   return res
     .status(200)
