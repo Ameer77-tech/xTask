@@ -303,3 +303,131 @@ export const saveFeedBack = async (req, res) => {
   });
   return res.status(200).json({ reply: "Feedback Sent", success: true });
 };
+
+export const getNotifications = async (req, res) => {
+  const userId = req.user.id;
+
+  const normalize = (d) => {
+    const nd = new Date(d);
+    nd.setHours(0, 0, 0, 0);
+    return nd;
+  };
+
+  const today = normalize(new Date());
+
+  const [tasks, projects] = await Promise.all([
+    tasksModel.find({ createdBy: userId }).lean(),
+    projectsModel.find({ createdBy: userId }).lean(),
+  ]);
+
+  const notifications = [];
+
+  // 1. Process Tasks
+  for (const task of tasks) {
+    if (!task.dueDate) continue;
+    const taskDue = normalize(task.dueDate);
+    const diffDays = Math.round((taskDue - today) / (1000 * 60 * 60 * 24));
+
+    if (!task.completed && task.status !== "completed") {
+      // Overdue
+      if (diffDays < 0) {
+        const daysAgo = Math.abs(diffDays);
+        notifications.push({
+          id: `task-overdue-${task._id}`,
+          title: "Task Overdue",
+          message: `"${task.title}" was due ${daysAgo === 1 ? "yesterday" : `${daysAgo} days ago`}.`,
+          type: "overdue",
+          priority: task.priority === 1 ? "High" : task.priority === 2 ? "Medium" : "Low",
+          category: task.type === "project" ? "Project Task" : "Personal Task",
+          link: "/tasks",
+          date: task.dueDate,
+          createdAt: task.dueDate,
+        });
+      }
+      // Due Today
+      else if (diffDays === 0) {
+        notifications.push({
+          id: `task-today-${task._id}`,
+          title: "Due Today",
+          message: `"${task.title}" is due today.`,
+          type: "due-today",
+          priority: task.priority === 1 ? "High" : task.priority === 2 ? "Medium" : "Low",
+          category: task.type === "project" ? "Project Task" : "Personal Task",
+          link: "/tasks",
+          date: task.dueDate,
+          createdAt: task.dueDate,
+        });
+      }
+      // Due Tomorrow / upcoming
+      else if (diffDays === 1) {
+        notifications.push({
+          id: `task-tomorrow-${task._id}`,
+          title: "Upcoming Deadline",
+          message: `"${task.title}" is due tomorrow.`,
+          type: "upcoming",
+          priority: task.priority === 1 ? "High" : task.priority === 2 ? "Medium" : "Low",
+          category: task.type === "project" ? "Project Task" : "Personal Task",
+          link: "/tasks",
+          date: task.dueDate,
+          createdAt: task.dueDate,
+        });
+      }
+    }
+  }
+
+  // 2. Process Projects
+  for (const project of projects) {
+    if (project.completed) {
+      notifications.push({
+        id: `project-completed-${project._id}`,
+        title: "Project Milestone",
+        message: `Project "${project.title}" has been completed!`,
+        type: "milestone",
+        priority: "Low",
+        category: "Project",
+        link: "/projects",
+        date: project.updatedAt || project.dueDate,
+        createdAt: project.updatedAt || project.dueDate,
+      });
+    } else if (project.dueDate) {
+      const projectDue = normalize(project.dueDate);
+      const diffDays = Math.round((projectDue - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) {
+        notifications.push({
+          id: `project-overdue-${project._id}`,
+          title: "Project Overdue",
+          message: `Project "${project.title}" is overdue!`,
+          type: "overdue",
+          priority: "High",
+          category: "Project",
+          link: "/projects",
+          date: project.dueDate,
+          createdAt: project.dueDate,
+        });
+      } else if (diffDays <= 2) {
+        notifications.push({
+          id: `project-due-${project._id}`,
+          title: "Project Deadline Approaching",
+          message: `Project "${project.title}" is due in ${diffDays === 0 ? "today" : diffDays === 1 ? "1 day" : "2 days"}.`,
+          type: "upcoming",
+          priority: "Medium",
+          category: "Project",
+          link: "/projects",
+          date: project.dueDate,
+          createdAt: project.dueDate,
+        });
+      }
+    }
+  }
+
+  // Sort: Overdue first, then Due Today, then Upcoming, then Milestones
+  const order = { overdue: 1, "due-today": 2, upcoming: 3, milestone: 4 };
+  notifications.sort((a, b) => (order[a.type] || 5) - (order[b.type] || 5));
+
+  return res.status(200).json({
+    success: true,
+    reply: "Fetched notifications",
+    count: notifications.length,
+    notifications,
+  });
+};

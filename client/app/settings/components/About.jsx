@@ -11,7 +11,7 @@ import SendFeedBackInput from "./SendFeedBackInput";
 
 const app = {
   name: "xTask",
-  version: "1.0.0",
+  version: "1.0.1",
   description:
     "xTask is a lightweight, privacy-focused task manager designed for personal productivity. Manage tasks, track priorities, and customize your experience effortlessly.",
   github: "https://github.com/yourusername/xtask",
@@ -49,7 +49,7 @@ const About = () => {
               <span className="text-sm font-medium">GitHub</span>
             </Link>
             <Link
-              href={"https://www.linkedin.com/in/ameer-shaik-55b106364/"}
+              href={"https://www.linkedin.com/in/ameer-shaik-23b153359/"}
               target="_blank"
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
             >
