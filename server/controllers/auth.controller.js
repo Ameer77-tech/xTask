@@ -78,6 +78,8 @@ export const verifyUser = async (req, res) => {
   }
 
   const matched = await bcrypt.compare(result.data.password, user.password);
+  console.log(matched);
+  
   if (!matched) {
     return res
       .status(401)

@@ -29,7 +29,6 @@ const Account = ({ user }) => {
                 height={90}
                 className="rounded-full border border-border/60 object-cover"
               />
-            
             </div>
 
             <div className="text-center sm:text-left">
