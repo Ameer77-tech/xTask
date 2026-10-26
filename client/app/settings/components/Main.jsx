@@ -16,7 +16,7 @@ const Main = ({ userData }) => {
         {/* <Notifications /> */}
         <Privacy />
         <About />
-        <BugFixes />
+        {/* <BugFixes /> */}
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 import express from "express";
 import passport from "passport";
+import { generateAuthCode } from "../lib/authCode.js";
 
 const googleAuthRouter = express.Router();
 
@@ -13,7 +14,8 @@ googleAuthRouter.get(
   }),
   (req, res) => {
     const { token } = req.user;
-    res.redirect(`${process.env.CLIENT_URL}/api/oauth/google?token=${token}`);
+    const code = generateAuthCode(token);
+    res.redirect(`${process.env.CLIENT_URL}/api/oauth/google?code=${code}`);
   }
 );
 

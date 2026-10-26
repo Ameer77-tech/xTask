@@ -1,3 +1,4 @@
+"use client"
 import Loading from "@/components/Loading";
 import { Spinner } from "@/components/ui/spinner";
 import React from "react";

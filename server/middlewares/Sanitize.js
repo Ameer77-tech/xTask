@@ -1,10 +1,16 @@
 import sanitize from "mongo-sanitize";
 
-// SAFE Sanitize Middleware (No req.query overwrite)
+// In-place sanitization to support Express 5 where req.query is a read-only getter
 export default function sanitizeMiddleware(req, res, next) {
-  if (req.body) req.body = sanitize({ ...req.body });
-  if (req.query) req.query = sanitize({ ...req.query });
-  if (req.params) req.params = sanitize({ ...req.params });
+  if (req.body && typeof req.body === "object") {
+    sanitize(req.body);
+  }
+  if (req.query && typeof req.query === "object") {
+    sanitize(req.query);
+  }
+  if (req.params && typeof req.params === "object") {
+    sanitize(req.params);
+  }
 
   next();
 }

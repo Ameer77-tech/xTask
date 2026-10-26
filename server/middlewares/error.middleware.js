@@ -23,7 +23,7 @@ export const errorMiddleware = (err, req, res, next) => {
   }
 
   // Mongoose validation error
-  else if (err.name === "ValidationError") {
+  else if (err.name === "ValidationError" || err.name === "ZodError") {
     status = 400;
     message = "Validation failed.";
   }

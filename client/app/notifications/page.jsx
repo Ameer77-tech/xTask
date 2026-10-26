@@ -1,5 +1,6 @@
 import React from "react";
 import NoNotifications from "./components/NoNotifications";
+import AllNotifications from "./components/AllNotifications";
 import AppSideBar from "@/components/SideBar";
 import { cookies } from "next/headers";
 import UserInitializer from "../initializers/user.initializer";
@@ -19,39 +20,65 @@ const page = async () => {
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
 
-  const getUserData = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-user`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          cookie: cookieHeader,
-        },
-        credentials: "include",
-        cache: "no-store",
+  const [userRes, notifRes] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-user`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        cookie: cookieHeader,
+      },
+      credentials: "include",
+      cache: "no-store",
+    }).catch(() => null),
+    fetch(`${process.env.NEXT_PUBLIC_XTASK_BACKEND}/api/get-notifications`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        cookie: cookieHeader,
+      },
+      credentials: "include",
+      cache: "no-store",
+    }).catch(() => null),
+  ]);
+
+  if (!userRes) {
+    redirect("/login");
+  }
+
+  const userData = await userRes.json();
+  if (userData?.reply === "Unauthorized" || !userData?.success) {
+    redirect("/login");
+  }
+
+  let notifications = [];
+  if (notifRes) {
+    try {
+      const notifData = await notifRes.json();
+      if (notifData?.success && Array.isArray(notifData.notifications)) {
+        notifications = notifData.notifications;
       }
-    );
-
-    let data = await res.json();
-
-    if (data.reply === "Unauthorized") {
-      redirect("/login");
-    } else if (!data.success) {
-      alert(data.reply);
-      return;
-    } else {
-      return data;
+    } catch {
+      notifications = [];
     }
-  };
-  const userData = await getUserData();
+  }
+
   return (
-    <div className="h-screen w-screen flex justify-start">
+    <>
       <ThemeSetter />
-      <UserInitializer userData={userData}></UserInitializer>
-      <AppSideBar />
-      <NoNotifications />
-    </div>
+      <UserInitializer userData={userData} />
+      <div className="h-screen w-screen flex justify-start">
+        <AppSideBar />
+        <main className="flex-1 h-screen overflow-y-auto">
+          {notifications.length > 0 ? (
+            <AllNotifications notifications={notifications} />
+          ) : (
+            <div className="h-full w-full flex items-center justify-center">
+              <NoNotifications />
+            </div>
+          )}
+        </main>
+      </div>
+    </>
   );
 };
 

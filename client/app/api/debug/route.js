@@ -1,10 +1,5 @@
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET() {
-  const token = cookies().get("token");
-  console.log("SERVER COMPONENT RECEIVED COOKIE:", token);
-
-  return Response.json({
-    receivedCookie: token ?? null,
-  });
+  return NextResponse.json({ status: "ok" });
 }
